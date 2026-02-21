@@ -1,40 +1,39 @@
 {
-         AppInjector Brasil - Dependency Injection for Delphi
+                          Apache License
+                      Version 2.0, January 2004
+                   http://www.apache.org/licenses/
 
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
 
-                   Copyright (c) 2023, Isaque Pinheiro
-                          All rights reserved.
+             http://www.apache.org/licenses/LICENSE-2.0
 
-                    GNU Lesser General Public License
-                      Versão 3, 29 de junho de 2007
-
-       Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
-       A todos é permitido copiar e distribuir cópias deste documento de
-       licença, mas mudá-lo não é permitido.
-
-       Esta versão da GNU Lesser General Public License incorpora
-       os termos e condições da versão 3 da GNU General Public License
-       Licença, complementado pelas permissões adicionais listadas no
-       arquivo LICENSE na pasta principal.
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
 }
 
 {
-  @abstract(AppInjectorBr Framework)
-  @created(15 Mar 2023)
-  @author(Isaque Pinheiro <isaquesp@gmail.com>)
-  @author(Site : https://www.isaquepinheiro.com.br)
+  @abstract(Injector4D - Dependency Injection for Delphi)
+  @description(Evolution4D brings modern, fluent, and expressive syntax to Delphi, making code cleaner and development more productive.)
+  @created(03 Abr 2023)
+  @author(Isaque Pinheiro <isaquepsp@gmail.com>)
+  @discord(https://discord.gg/T2zJC8zX)
 }
 
-unit injector4d.service;
+unit Injector.Service;
 
 interface
 
 uses
-  Rtti,
-  TypInfo,
-  SysUtils,
-  Generics.Collections,
-  injector4d.events;
+  System.Rtti,
+  System.TypInfo,
+  System.SysUtils,
+  System.Generics.Collections,
+  Injector4D.Events;
 
 type
   TInjectionMode = (imSingleton, imFactory);
