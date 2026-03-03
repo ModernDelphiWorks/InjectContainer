@@ -32,7 +32,7 @@
   @created(2023-04-03)
 }
 
-unit Service.Abstract;
+unit Inject.Service.Abstract;
 
 interface
 

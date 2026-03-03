@@ -87,13 +87,13 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="UTesteInjector.pas"/>
-        <DCCReference Include="..\Source\Container.pas"/>
-        <DCCReference Include="..\Source\Events.pas"/>
-        <DCCReference Include="..\Source\Factory.pas"/>
+        <DCCReference Include="UTesteInject.pas"/>
+        <DCCReference Include="..\Source\Inject.Container.pas"/>
+        <DCCReference Include="..\Source\Inject.Events.pas"/>
+        <DCCReference Include="..\Source\Inject.Factory.pas"/>
         <DCCReference Include="..\Source\Inject.pas"/>
-        <DCCReference Include="..\Source\Service.Abstract.pas"/>
-        <DCCReference Include="..\Source\Service.pas"/>
+        <DCCReference Include="..\Source\Inject.Service.Abstract.pas"/>
+        <DCCReference Include="..\Source\Inject.Service.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

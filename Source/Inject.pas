@@ -42,9 +42,9 @@ uses
   SysUtils,
   SyncObjs,
   Generics.Collections,
-  Service,
-  Container,
-  Events;
+  Inject.Service,
+  Inject.Container,
+  Inject.Events;
 
 type
   // Exceções específicas do Injector4D
@@ -52,7 +52,7 @@ type
   EServiceAlreadyRegistered = class(EInjectException);
   EServiceNotFound = class(EInjectException);
   ECircularDependency = class(EInjectException);
-  TConstructorParams = Events.TConstructorParams;
+  TConstructorParams = Inject.Events.TConstructorParams;
 
   PInject = ^TInject;
   TInject = class(TInjectContainer)

@@ -11,13 +11,13 @@ uses
   DUnitX.Loggers.Console,
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
-  UTesteInjector in 'UTesteInjector.pas',
-  Container in '..\Source\Container.pas',
-  Events in '..\Source\Events.pas',
-  Factory in '..\Source\Factory.pas',
+  UTesteInject in 'UTesteInject.pas',
+  Inject.Container in '..\Source\Inject.Container.pas',
+  Inject.Events in '..\Source\Inject.Events.pas',
+  Inject.Factory in '..\Source\Inject.Factory.pas',
   Inject in '..\Source\Inject.pas',
-  Service.Abstract in '..\Source\Service.Abstract.pas',
-  Service in '..\Source\Service.pas';
+  Inject.Service.Abstract in '..\Source\Inject.Service.Abstract.pas',
+  Inject.Service in '..\Source\Inject.Service.pas';
 
 var
   runner : ITestRunner;
