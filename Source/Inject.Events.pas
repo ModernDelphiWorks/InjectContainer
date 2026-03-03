@@ -32,56 +32,50 @@
   @created(2023-04-03)
 }
 
-unit Container;
+unit Inject.Events;
+
 
 interface
 
 uses
-  System.SysUtils,
-  System.Generics.Collections,
-  Factory,
-  Service,
-  Events;
+  System.Rtti,
+  System.SysUtils;
 
 type
-  TInjectAbstract = class
-  end;
+  TConstructorParams = TArray<TValue>;
+  TConstructorCallback = TFunc<TConstructorParams>;
 
-  TInjectContainer = class(TInjectAbstract)
-  protected
-    FInjectorFactory: TInjectFactory;
-    FRepositoryReference: TDictionary<String, TClass>;
-    FRepositoryInterface: TDictionary<String, TPair<TClass, TGUID>>;
-    FInstances: TObjectDictionary<String, TServiceData>;
-    FInjectorEvents: TConstructorEvents;
+  TInjectEvents = class
+  private
+    FOnDestroy: TProc<TObject>;
+    FOnCreate: TProc<TObject>;
+    FOnParams: TConstructorCallback;
+    procedure _SetOnDestroy(const AOnDestroy: TProc<TObject>);
+    procedure _SetOnCreate(const AOnCreate: TProc<TObject>);
+    procedure _SetOnParams(const Value: TConstructorCallback);
   public
-    constructor Create; virtual;
-    destructor Destroy; override;
+    property OnDestroy: TProc<TObject> read FOnDestroy write _SetOnDestroy;
+    property OnCreate: TProc<TObject> read FOnCreate write _SetOnCreate;
+    property OnParams: TConstructorCallback read FOnParams write _SetOnParams;
   end;
 
 implementation
 
-{ TInjectorFactory }
+{ TInjectorEvents }
 
-constructor TInjectContainer.Create;
+procedure TInjectEvents._SetOnDestroy(const AOnDestroy: TProc<TObject>);
 begin
-  FInjectorFactory := TInjectFactory.Create;
-  FRepositoryReference := TDictionary<String, TClass>.Create;
-  FRepositoryInterface := TDictionary<String, TPair<TClass, TGUID>>.Create;
-  FInstances := TObjectDictionary<String, TServiceData>.Create([doOwnsValues]);
-  FInjectorEvents := TConstructorEvents.Create([doOwnsValues]);
+  FOnDestroy := TProc<TObject>(AOnDestroy);
 end;
 
-destructor TInjectContainer.Destroy;
+procedure TInjectEvents._SetOnParams(const Value: TConstructorCallback);
 begin
-  FRepositoryReference.Free;
-  FRepositoryInterface.Free;
-  FInjectorEvents.Free;
-  FInjectorFactory.Free;
-  FInstances.Free;
-  inherited;
+  FOnParams := Value;
+end;
+
+procedure TInjectEvents._SetOnCreate(const AOnCreate: TProc<TObject>);
+begin
+  FOnCreate := AOnCreate;
 end;
 
 end.
-
-

@@ -32,7 +32,7 @@
   @created(2023-04-03)
 }
 
-unit Service;
+unit Inject.Service;
 
 interface
 
@@ -41,7 +41,7 @@ uses
   TypInfo,
   SysUtils,
   Generics.Collections,
-  Events;
+  Inject.Events;
 
 type
   TInjectionMode = (imSingleton, imFactory);

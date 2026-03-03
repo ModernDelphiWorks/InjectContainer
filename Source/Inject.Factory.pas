@@ -32,14 +32,14 @@
   @created(2023-04-03)
 }
 
-unit Factory;
+unit Inject.Factory;
 
 interface
 
 uses
   Rtti,
   SysUtils,
-  Service;
+  Inject.Service;
 
 type
   TInjectFactory = class
