@@ -1,4 +1,4 @@
-program PTestInjector;
+program PTestInjectContainer;
 
 {$IFNDEF TESTINSIGHT}
 {$APPTYPE CONSOLE}
@@ -12,13 +12,12 @@ uses
   DUnitX.Loggers.Xml.NUnit,
   DUnitX.TestFramework,
   UTesteInjector in 'UTesteInjector.pas',
-  app.injector in '..\Source\app.injector.pas',
-  app.injector.abstract in '..\Source\Core\app.injector.abstract.pas',
-  app.injector.container in '..\Source\Core\app.injector.container.pas',
-  app.injector.events in '..\Source\Core\app.injector.events.pas',
-  app.injector.factory in '..\Source\Core\app.injector.factory.pas',
-  app.injector.service in '..\Source\Core\app.injector.service.pas',
-  app.injector.lazarus in '..\Source\Lazarus\app.injector.lazarus.pas';
+  Container in '..\Source\Container.pas',
+  Events in '..\Source\Events.pas',
+  Factory in '..\Source\Factory.pas',
+  Inject in '..\Source\Inject.pas',
+  Service.Abstract in '..\Source\Service.Abstract.pas',
+  Service in '..\Source\Service.pas';
 
 var
   runner : ITestRunner;

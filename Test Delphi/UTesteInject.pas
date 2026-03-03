@@ -1,4 +1,4 @@
-unit UTesteInjector;
+unit UTesteInject;
 
 interface
 
@@ -73,7 +73,7 @@ type
 implementation
 
 uses
-  app.injector;
+  Inject;
 
 procedure TTestInjector.Setup;
 begin
@@ -89,9 +89,9 @@ procedure TTestInjector.TestInjectorFactory;
 var
   LMyClass1: TMyClass;
   LMyClass2: TMyClass;
-  LInjector: TInjectorBr;
+  LInjector: TInject;
 begin
-  LInjector := TInjectorBr.Create;
+  LInjector := TInject.Create;
   try
     LInjector.Factory<TMyClass>;
 
@@ -108,9 +108,9 @@ procedure TTestInjector.TestInjectorInterface;
 var
   LMyClass1: IMyClass;
   LMyClass2: IMyClass;
-  LInjector: TInjectorBr;
+  LInjector: TInject;
 begin
-  LInjector := TInjectorBr.Create;
+  LInjector := TInject.Create;
   try
     LInjector.SingletonInterface<IMyClass, TMyClass>;
 
@@ -127,9 +127,9 @@ end;
 procedure TTestInjector.TestInjectorInterfaceGetMessage;
 var
   LMyClass1: IMyClass;
-  LInjector: TInjectorBr;
+  LInjector: TInject;
 begin
-  LInjector := TInjectorBr.Create;
+  LInjector := TInject.Create;
   try
     LInjector.SingletonInterface<IMyClass, TMyClass>;
 
@@ -144,9 +144,9 @@ procedure TTestInjector.TestInjectorInterfaceTag;
 var
   LMyClass1: IMyClass;
   LMyClass2: IMyClass;
-  LInjector: TInjectorBr;
+  LInjector: TInject;
 begin
-  LInjector := TInjectorBr.Create;
+  LInjector := TInject.Create;
   try
     LInjector.SingletonInterface<IMyClass, TMyClass>('TMyClass');
 
@@ -163,9 +163,9 @@ procedure TTestInjector.TestInjectorInterfaceRefCountEqualTo;
 var
   LMyClass1: IMyClass;
   LMyClass2: IMyClass;
-  LInjector: TInjectorBr;
+  LInjector: TInject;
 begin
-  LInjector := TInjectorBr.Create;
+  LInjector := TInject.Create;
   try
     LInjector.SingletonInterface<IMyClass, TMyClass>;
 
@@ -181,9 +181,9 @@ end;
 procedure TTestInjector.TestInjectorInterfaceRefCountEqualOne;
 var
   LMyClass1: IMyClass;
-  LInjector: TInjectorBr;
+  LInjector: TInject;
 begin
-  LInjector := TInjectorBr.Create;
+  LInjector := TInject.Create;
   try
     LInjector.SingletonInterface<IMyClass, TMyClass>;
 
@@ -198,9 +198,9 @@ procedure TTestInjector.TestInjectorLazyLoad;
 var
   LMyClass1: TMyClass;
   LMyClass2: TMyClass;
-  LInjector: TInjectorBr;
+  LInjector: TInject;
 begin
-  LInjector := TInjectorBr.Create;
+  LInjector := TInject.Create;
   try
     LInjector.SingletonLazy<TMyClass>;
 
@@ -219,9 +219,9 @@ var
   LParamInterface: IParamClass;
   LMyClassParam: TMyClassParam;
   LMyClassParam1: TMyClassParam;
-  LInjector: TInjectorBr;
+  LInjector: TInject;
 begin
-  LInjector := TInjectorBr.Create;
+  LInjector := TInject.Create;
   try
     LInjector.Singleton<TParamClass>;
     LInjector.SingletonInterface<IParamClass, TParamClass>;
@@ -241,9 +241,9 @@ procedure TTestInjector.TestInjectorSington;
 var
   LMyClass1: TMyClass;
   LMyClass2: TMyClass;
-  LInjector: TInjectorBr;
+  LInjector: TInject;
 begin
-  LInjector := TInjectorBr.Create;
+  LInjector := TInject.Create;
   try
     LInjector.Singleton<TMyClass>;
 

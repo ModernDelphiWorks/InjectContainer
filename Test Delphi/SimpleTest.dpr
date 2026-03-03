@@ -5,11 +5,12 @@
 uses
   System.SysUtils,
   System.Classes,
-  injector4d in '..\Source\injector4d.pas',
-  injector4d.container in '..\Source\injector4d.container.pas',
-  injector4d.events in '..\Source\injector4d.events.pas',
-  injector4d.factory in '..\Source\injector4d.factory.pas',
-  injector4d.service in '..\Source\injector4d.service.pas';
+  Container in '..\Source\Container.pas',
+  Events in '..\Source\Events.pas',
+  Factory in '..\Source\Factory.pas',
+  Inject in '..\Source\Inject.pas',
+  Service.Abstract in '..\Source\Service.Abstract.pas',
+  Service in '..\Source\Service.pas';
 
 type
   ITestService = interface
@@ -42,7 +43,7 @@ begin
 end;
 
 var
-  Injector: TInjector4D;
+  Injector: TInject;
   TestObj: TTestClass;
   TestIntf: ITestService;
   I: Integer;
