@@ -1,91 +1,99 @@
 ﻿{
-                          Apache License
-                      Version 2.0, January 2004
-                   http://www.apache.org/licenses/
+  ------------------------------------------------------------------------------
+  InjectContainer
+  Lightweight and modular Dependency Injection container for Delphi.
+  Copyright (c) 2023-2026 Isaque Pinheiro
 
-       Licensed under the Apache License, Version 2.0 (the "License");
-       you may not use this file except in compliance with the License.
-       You may obtain a copy of the License at
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
 
-             http://www.apache.org/licenses/LICENSE-2.0
+      http://www.apache.org/licenses/LICENSE-2.0
 
-       Unless required by applicable law or agreed to in writing, software
-       distributed under the License is distributed on an "AS IS" BASIS,
-       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-       See the License for the specific language governing permissions and
-       limitations under the License.
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ------------------------------------------------------------------------------
 }
 
 {
-  @abstract(Injector4D - Dependency Injection for Delphi)
-  @description(Evolution4D brings modern, fluent, and expressive syntax to Delphi, making code cleaner and development more productive.)
-  @created(03 Abr 2023)
-  @author(Isaque Pinheiro <isaquepsp@gmail.com>)
-  @discord(https://discord.gg/T2zJC8zX)
+  @abstract(InjectContainer - Modular Dependency Injection for Delphi)
+
+  @description(
+    InjectContainer provides a lightweight, extensible, and modular
+    dependency injection container for Delphi applications.
+    It supports constructor injection, service registration,
+    lifetime management, and clean architecture patterns.
+  )
+
+  @author(Isaque Pinheiro)
+  @created(2023-04-03)
 }
 
-unit Injector;
+unit Inject;
 
 interface
 
 uses
-  System.Rtti,
-  System.TypInfo,
-  System.SysUtils,
-  System.SyncObjs,
-  System.Generics.Collections,
-  Injector4d.Service,
-  Injector4d.Container,
-  Injector4d.Events;
+  Rtti,
+  TypInfo,
+  SysUtils,
+  SyncObjs,
+  Generics.Collections,
+  Service,
+  Container,
+  Events;
 
 type
   // Exceções específicas do Injector4D
-  EInjectorException = class(Exception);
-  EServiceAlreadyRegistered = class(EInjectorException);
-  EServiceNotFound = class(EInjectorException);
-  ECircularDependency = class(EInjectorException);
-  TConstructorParams = injector4d.events.TConstructorParams;
+  EInjectException = class(Exception);
+  EServiceAlreadyRegistered = class(EInjectException);
+  EServiceNotFound = class(EInjectException);
+  ECircularDependency = class(EInjectException);
+  TConstructorParams = Events.TConstructorParams;
 
-  PInjector4D = ^TInjector4D;
-  TInjector4D = class(TInjectorContainer)
+  PInject = ^TInject;
+  TInject = class(TInjectContainer)
   strict private
-    FDependencyStack: TList<String>;
+    FDependencyStack: TList<string>;
     // Cache RTTI para melhorar performance
     FRttiContext: TRttiContext;
-    FTypeCache: TDictionary<String, TRttiType>;
-    FMethodCache: TDictionary<String, TRttiMethod>;
+    FTypeCache: TDictionary<string, TRttiType>;
+    FMethodCache: TDictionary<string, TRttiMethod>;
     FRttiCacheLock: TCriticalSection;
     // Sistema de logging opcional
     FLoggingEnabled: Boolean;
-    FLogCallback: TProc<String>;
-    procedure _AddEvents<T>(const AClassName: String;
+    FLogCallback: TProc<string>;
+    procedure _AddEvents<T>(const AClassName: string;
       const AOnCreate: TProc<T>;
       const AOnDestroy: TProc<T>;
       const AOnConstructorParams: TConstructorCallback = nil);
     function _ResolverInterfaceType(const AHandle: PTypeInfo;
       const AGUID: TGUID): TValue;
     function _ResolverParams(const AClass: TClass): TConstructorParams; overload;
-    procedure _CheckCircularDependency(const AServiceName: String);
-    procedure _PushDependency(const AServiceName: String);
+    procedure _CheckCircularDependency(const AServiceName: string);
+    procedure _PushDependency(const AServiceName: string);
     procedure _PopDependency;
     // Métodos de cache RTTI
-    function _GetCachedType(const AClassName: String): TRttiType;
-    function _GetCachedMethod(const AClassName, AMethodName: String): TRttiMethod;
+    function _GetCachedType(const AClassName: string): TRttiType;
+    function _GetCachedMethod(const AClassName, AMethodName: string): TRttiMethod;
     procedure _ClearRttiCache;
     // Métodos de logging
-    procedure _Log(const AMessage: String);
-    procedure _LogOperation(const AOperation, AServiceName: String);
+    procedure _Log(const AMessage: string);
+    procedure _LogOperation(const AOperation, AServiceName: string);
   protected
-    function GetTry<T: class, constructor>(const ATag: String = ''): T;
-    function GetInterfaceTry<I: IInterface>(const ATag: String = ''): I;
+    function GetTry<T: class, constructor>(const ATag: string = ''): T;
+    function GetInterfaceTry<I: IInterface>(const ATag: string = ''): I;
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure AddInjector(const ATag: String;
-      const AInstance: TInjector4D);
+    procedure AddInjector(const ATag: string;
+      const AInstance: TInject);
     procedure AddInstance<T: class>(const AInstance: TObject);
 //    procedure Singleton<T: class, constructor>(
-//      const ATag: String = '';
+//      const ATag: string = '';
 //      const AOnCreate: TProc<T> = nil;
 //      const AOnDestroy: TProc<T> = nil;
 //      const AOnConstructorParams: TConstructorCallback = nil);
@@ -98,7 +106,7 @@ type
       const AOnDestroy: TProc<T> = nil;
       const AOnConstructorParams: TConstructorCallback = nil);
     procedure SingletonInterface<I: IInterface; T: class, constructor>(
-      const ATag: String = '';
+      const ATag: string = '';
       const AOnCreate: TProc<T> = nil;
       const AOnDestroy: TProc<T> = nil;
       const AOnConstructorParams: TConstructorCallback = nil);
@@ -106,41 +114,41 @@ type
       const AOnCreate: TProc<T> = nil;
       const AOnDestroy: TProc<T> = nil;
       const AOnConstructorParams: TConstructorCallback = nil);
-    procedure Remove<T: class>(const ATag: String = '');
-    function GetInstances: TObjectDictionary<String, TServiceData>;
-    function Get<T: class, constructor>(const ATag: String = ''): T;
-    function GetInterface<I: IInterface>(const ATag: String = ''): I;
+    procedure Remove<T: class>(const ATag: string = '');
+    function GetInstances: TObjectDictionary<string, TServiceData>;
+    function Get<T: class, constructor>(const ATag: string = ''): T;
+    function GetInterface<I: IInterface>(const ATag: string = ''): I;
     // Métodos de logging público
-    procedure EnableLogging(const ALogCallback: TProc<String> = nil);
+    procedure EnableLogging(const ALogCallback: TProc<string> = nil);
     procedure DisableLogging;
     procedure ClearCache;
   end;
 
-function GetInjector: TInjector4D;
+function GetInjector: TInject;
 
 var
-  GPInjector: PInjector4D = nil;
+  GPInjector: PInject = nil;
   GInjectorLock: TCriticalSection = nil;
 
 implementation
 
 { TInjectorBr }
 
-constructor TInjector4D.Create;
+constructor TInject.Create;
 begin
   inherited Create;
-  FDependencyStack := TList<String>.Create;
+  FDependencyStack := TList<string>.Create;
   // Inicializar cache RTTI
   FRttiContext := TRttiContext.Create;
-  FTypeCache := TDictionary<String, TRttiType>.Create;
-  FMethodCache := TDictionary<String, TRttiMethod>.Create;
+  FTypeCache := TDictionary<string, TRttiType>.Create;
+  FMethodCache := TDictionary<string, TRttiMethod>.Create;
   FRttiCacheLock := TCriticalSection.Create;
   // Inicializar logging
   FLoggingEnabled := False;
   FLogCallback := nil;
 end;
 
-destructor TInjector4D.Destroy;
+destructor TInject.Destroy;
 begin
   if Assigned(FDependencyStack) then
     FDependencyStack.Free;
@@ -155,7 +163,7 @@ begin
   inherited Destroy;
 end;
 
-function GetInjector: TInjector4D;
+function GetInjector: TInject;
 begin
   if not Assigned(GInjectorLock) then
     Exit(nil);
@@ -170,12 +178,12 @@ begin
   end;
 end;
 
-procedure TInjector4D.Singleton<T>(const AOnCreate: TProc<T>;
+procedure TInject.Singleton<T>(const AOnCreate: TProc<T>;
   const AOnDestroy: TProc<T>;
   const AOnConstructorParams: TConstructorCallback);
 var
   LValue: TServiceData;
-  LKey: String;
+  LKey: string;
 begin
   LKey := T.ClassName;
   _LogOperation('Add Singleton', LKey);
@@ -189,26 +197,26 @@ begin
   _AddEvents<T>(LKey, AOnCreate, AOnDestroy, AOnConstructorParams);
 end;
 
-procedure TInjector4D.SingletonInterface<I, T>(const ATag: String;
+procedure TInject.SingletonInterface<I, T>(const ATag: string;
   const AOnCreate: TProc<T>;
   const AOnDestroy: TProc<T>;
   const AOnConstructorParams: TConstructorCallback);
 var
   LGuid: TGUID;
-  LGuidString: String;
+  LGuidstring: string;
 begin
   LGuid := GetTypeData(TypeInfo(I)).Guid;
-  LGuidString := GUIDToString(LGuid);
+  LGuidstring := GUIDTostring(LGuid);
   if ATag <> '' then
-    LGuidString := ATag;
-  if FRepositoryInterface.ContainsKey(LGuidString) then
+    LGuidstring := ATag;
+  if FRepositoryInterface.ContainsKey(LGuidstring) then
     raise EServiceAlreadyRegistered.Create(Format('Interface %s already registered!', [T.ClassName]));
-  FRepositoryInterface.Add(LGuidString, TPair<TClass, TGUID>.Create(T, LGuid));
+  FRepositoryInterface.Add(LGuidstring, TPair<TClass, TGUID>.Create(T, LGuid));
   // Events
-  _AddEvents<T>(LGuidString, AOnCreate, AOnDestroy, AOnConstructorParams);
+  _AddEvents<T>(LGuidstring, AOnCreate, AOnDestroy, AOnConstructorParams);
 end;
 
-procedure TInjector4D.SingletonLazy<T>(const AOnCreate: TProc<T>;
+procedure TInject.SingletonLazy<T>(const AOnCreate: TProc<T>;
   const AOnDestroy: TProc<T>;
   const AOnConstructorParams: TConstructorCallback);
 begin
@@ -219,21 +227,21 @@ begin
   _AddEvents<T>(T.ClassName, AOnCreate, AOnDestroy, AOnConstructorParams);
 end;
 
-procedure TInjector4D.AddInjector(const ATag: String;
-  const AInstance: TInjector4D);
+procedure TInject.AddInjector(const ATag: string;
+  const AInstance: TInject);
 var
   LValue: TServiceData;
 begin
   if FRepositoryReference.ContainsKey(ATag) then
     raise EServiceAlreadyRegistered.Create(Format('Injector %s already registered!', [ATag]));
   FRepositoryReference.Add(ATag, TServiceData);
-  LValue := TServiceData.Create(TInjector4D,
+  LValue := TServiceData.Create(TInject,
                                 AInstance,
                                 TInjectionMode.imSingleton);
   FInstances.Add(ATag, LValue);
 end;
 
-procedure TInjector4D.AddInstance<T>(const AInstance: TObject);
+procedure TInject.AddInstance<T>(const AInstance: TObject);
 var
   LValue: TServiceData;
 begin
@@ -245,7 +253,7 @@ begin
   FInstances.Add(T.ClassName, LValue);
 end;
 
-procedure TInjector4D.Factory<T>(const AOnCreate: TProc<T>;
+procedure TInject.Factory<T>(const AOnCreate: TProc<T>;
   const AOnDestroy: TProc<T>;
   const AOnConstructorParams: TConstructorCallback);
 var
@@ -262,33 +270,33 @@ begin
   _AddEvents<T>(T.ClassName, AOnCreate, AOnDestroy, AOnConstructorParams);
 end;
 
-function TInjector4D.GetInstances: TObjectDictionary<String, TServiceData>;
+function TInject.GetInstances: TObjectDictionary<string, TServiceData>;
 begin
   Result := FInstances;
 end;
 
-function TInjector4D.Get<T>(const ATag: String): T;
+function TInject.Get<T>(const ATag: string): T;
 var
   LItem: TServiceData;
-  LTag: String;
+  LTag: string;
 begin
   LTag := ATag;
   if LTag = '' then
     LTag := T.ClassName;
   _LogOperation('Get Service', LTag);
-  
+
   Result := GetTry<T>(ATag);
   if Result <> nil then
   begin
     _Log('Service resolved: ' + LTag);
     Exit;
   end;
-  
+
   for LItem in GetInstances.Values do
   begin
-    if LItem.AsInstance is TInjector4D then
+    if LItem.AsInstance is TInject then
     begin
-      Result := TInjector4D(LItem.AsInstance).GetTry<T>(ATag);
+      Result := TInject(LItem.AsInstance).GetTry<T>(ATag);
       if Result <> nil then
       begin
         _Log('Service resolved from child injector: ' + LTag);
@@ -296,54 +304,54 @@ begin
       end;
     end;
   end;
-  
+
   // Se chegou até aqui, o serviço não foi encontrado
   _Log('Service not found: ' + LTag);
   raise EServiceNotFound.Create(Format('Service %s not found!', [LTag]));
 end;
 
-function TInjector4D.GetInterface<I>(const ATag: String): I;
+function TInject.GetInterface<I>(const ATag: string): I;
 var
   LItem: TServiceData;
   LGuid: TGUID;
-  LGuidString: String;
+  LGuidstring: string;
 begin
   LGuid := GetTypeData(TypeInfo(I)).Guid;
-  LGuidString := GUIDToString(LGuid);
+  LGuidstring := GUIDTostring(LGuid);
   if ATag <> '' then
-    LGuidString := ATag;
-  _LogOperation('Get Interface', LGuidString);
-  
+    LGuidstring := ATag;
+  _LogOperation('Get Interface', LGuidstring);
+
   Result := GetInterfaceTry<I>(ATag);
   if Result <> nil then
   begin
-    _Log('Interface resolved: ' + LGuidString);
+    _Log('Interface resolved: ' + LGuidstring);
     Exit;
   end;
-  
+
   for LItem in GetInstances.Values do
   begin
-    if LItem.AsInstance is TInjector4D then
+    if LItem.AsInstance is TInject then
     begin
-      Result := TInjector4D(LItem.AsInstance).GetInterfaceTry<I>(ATag);
+      Result := TInject(LItem.AsInstance).GetInterfaceTry<I>(ATag);
       if Result <> nil then
       begin
-        _Log('Interface resolved from child injector: ' + LGuidString);
+        _Log('Interface resolved from child injector: ' + LGuidstring);
         Exit;
       end;
     end;
   end;
-  
+
   // Se chegou até aqui, a interface não foi encontrada
-  _Log('Interface not found: ' + LGuidString);
-  raise EServiceNotFound.Create(Format('Interface %s not found!', [LGuidString]));
+  _Log('Interface not found: ' + LGuidstring);
+  raise EServiceNotFound.Create(Format('Interface %s not found!', [LGuidstring]));
 end;
 
-function TInjector4D.GetTry<T>(const ATag: String): T;
+function TInject.GetTry<T>(const ATag: string): T;
 var
   LValue: TServiceData;
   LParams: TConstructorParams;
-  LTag: String;
+  LTag: string;
 begin
   Result := nil;
   LTag := ATag;
@@ -351,7 +359,7 @@ begin
     LTag := T.ClassName;
   if not FRepositoryReference.ContainsKey(LTag) then
     Exit;
-  
+
   // Verificar dependência circular
   _PushDependency(LTag);
   try
@@ -370,46 +378,46 @@ begin
   end;
 end;
 
-function TInjector4D.GetInterfaceTry<I>(const ATag: String): I;
+function TInject.GetInterfaceTry<I>(const ATag: string): I;
 var
   LServiceData: TServiceData;
   LParams: TConstructorParams;
   LGuid: TGUID;
-  LGuidString: String;
+  LGuidstring: string;
   LKey: TClass;
   LValue: TGUID;
 begin
   Result := nil;
   LGuid := GetTypeData(TypeInfo(I)).Guid;
-  LGuidString := GUIDToString(LGuid);
+  LGuidstring := GUIDTostring(LGuid);
   if ATag <> '' then
-    LGuidString := ATag;
-  if not FRepositoryInterface.ContainsKey(LGuidString) then
+    LGuidstring := ATag;
+  if not FRepositoryInterface.ContainsKey(LGuidstring) then
     Exit;
-  
+
   // Verificar dependência circular
-  _PushDependency(LGuidString);
+  _PushDependency(LGuidstring);
   try
     // SingletonLazy
     LParams := [];
-    if not FInstances.ContainsKey(LGuidString) then
+    if not FInstances.ContainsKey(LGuidstring) then
     begin
-      LKey := FRepositoryInterface.Items[LGuidString].Key;
-      LValue := FRepositoryInterface.Items[LGuidString].Value;
+      LKey := FRepositoryInterface.Items[LGuidstring].Key;
+      LValue := FRepositoryInterface.Items[LGuidstring].Value;
       LServiceData := FInjectorFactory.FactoryInterface<I>(LKey, LValue);
-      FInstances.Add(LGuidString, LServiceData);
+      FInstances.Add(LGuidstring, LServiceData);
     end;
-    if (FInstances.Items[LGuidString].AsInstance = nil) and (FInjectorEvents.Count = 0) then
-      LParams := _ResolverParams(FInstances.Items[LGuidString].ServiceClass);
-    Result := FInstances.Items[LGuidString].GetInterface<I>(LGuidString, FInjectorEvents, LParams);
+    if (FInstances.Items[LGuidstring].AsInstance = nil) and (FInjectorEvents.Count = 0) then
+      LParams := _ResolverParams(FInstances.Items[LGuidstring].ServiceClass);
+    Result := FInstances.Items[LGuidstring].GetInterface<I>(LGuidstring, FInjectorEvents, LParams);
   finally
     _PopDependency;
   end;
 end;
 
-procedure TInjector4D.Remove<T>(const ATag: String);
+procedure TInject.Remove<T>(const ATag: string);
 var
-  LTag: String;
+  LTag: string;
   LOnDestroy: TProc<T>;
 begin
   LTag := ATag;
@@ -432,19 +440,19 @@ begin
     FInstances.Remove(LTag);
 end;
 
-procedure TInjector4D._AddEvents<T>(const AClassName: String;
+procedure TInject._AddEvents<T>(const AClassName: string;
   const AOnCreate: TProc<T>;
   const AOnDestroy: TProc<T>;
   const AOnConstructorParams: TConstructorCallback);
 var
-  LEvents: TInjectorEvents;
+  LEvents: TInjectEvents;
 begin
   if (not Assigned(AOnDestroy)) and (not Assigned(AOnCreate)) and
      (not Assigned(AOnConstructorParams)) then
     Exit;
   if FInjectorEvents.ContainsKey(AClassname) then
     Exit;
-  LEvents := TInjectorEvents.Create;
+  LEvents := TInjectEvents.Create;
   LEvents.OnDestroy := TProc<TObject>(AOnDestroy);
   LEvents.OnCreate := TProc<TObject>(AOnCreate);
   LEvents.OnParams := AOnConstructorParams;
@@ -452,16 +460,16 @@ begin
   FInjectorEvents.AddOrSetValue(AClassname, LEvents);
 end;
 
-function TInjector4D._ResolverParams(const AClass: TClass): TConstructorParams;
+function TInject._ResolverParams(const AClass: TClass): TConstructorParams;
 
-  function ToStringParams(const AValues: TArray<TValue>): String;
+  function TostringParams(const AValues: TArray<TValue>): string;
   var
     LIndex: Integer;
   begin
     Result := '';
     for LIndex := 0 to High(AValues) do
     begin
-      Result := Result + AValues[LIndex].ToString;
+      Result := Result + AValues[LIndex].Tostring;
       if LIndex < High(AValues) then
         Result := Result + ', ';
     end;
@@ -495,7 +503,7 @@ begin
       case LParameterType.TypeKind of
         tkClass, tkClassRef:
         begin
-          LParameterValues[LFor] := TValue.From(Get<TObject>(String(LParameterType.Handle.Name)))
+          LParameterValues[LFor] := TValue.From(Get<TObject>(string(LParameterType.Handle.Name)))
                                           .Cast(LParameterType.Handle);
         end;
         tkInterface:
@@ -510,12 +518,12 @@ begin
     end;
   except
     on E: Exception do
-      raise Exception.Create(E.Message + ' => ' + ToStringParams(LParameterValues));
+      raise Exception.Create(E.Message + ' => ' + TostringParams(LParameterValues));
   end;
   Result := LParameterValues;
 end;
 
-function TInjector4D._ResolverInterfaceType(const AHandle: PTypeInfo;
+function TInject._ResolverInterfaceType(const AHandle: PTypeInfo;
   const AGUID: TGUID): TValue;
 var
   LValue: TValue;
@@ -523,7 +531,7 @@ var
   LInterface: IInterface;
 begin
   Result := TValue.From(nil);
-  LValue := TValue.From(GetInterface<IInterface>(GUIDToString(AGUID)));
+  LValue := TValue.From(GetInterface<IInterface>(GUIDTostring(AGUID)));
   if Supports(LValue.AsInterface, AGUID, LInterface) then
   begin
     TValue.Make(@LInterface, AHandle, LResult);
@@ -531,11 +539,11 @@ begin
   end;
 end;
 
-procedure TInjector4D._CheckCircularDependency(const AServiceName: String);
+procedure TInject._CheckCircularDependency(const AServiceName: string);
 var
   LFor: Integer;
   LDep: Integer;
-  LDependencyChain: String;
+  LDependencyChain: string;
 begin
   if not Assigned(FDependencyStack) then
     Exit;
@@ -563,27 +571,27 @@ begin
   end;
 end;
 
-procedure TInjector4D._PushDependency(const AServiceName: String);
+procedure TInject._PushDependency(const AServiceName: string);
 begin
   if not Assigned(FDependencyStack) then
-    FDependencyStack := TList<String>.Create;
-  
+    FDependencyStack := TList<string>.Create;
+
   _CheckCircularDependency(AServiceName);
   FDependencyStack.Add(AServiceName);
 end;
 
-procedure TInjector4D._PopDependency;
+procedure TInject._PopDependency;
 begin
   if Assigned(FDependencyStack) and (FDependencyStack.Count > 0) then
     FDependencyStack.Delete(FDependencyStack.Count - 1);
 end;
 
-function TInjector4D._GetCachedType(const AClassName: String): TRttiType;
+function TInject._GetCachedType(const AClassName: string): TRttiType;
 begin
   Result := nil;
   if not Assigned(FRttiCacheLock) then
     Exit;
-  
+
   FRttiCacheLock.Enter;
   try
     if FTypeCache.ContainsKey(AClassName) then
@@ -599,15 +607,15 @@ begin
   end;
 end;
 
-function TInjector4D._GetCachedMethod(const AClassName, AMethodName: String): TRttiMethod;
+function TInject._GetCachedMethod(const AClassName, AMethodName: string): TRttiMethod;
 var
-  LKey: String;
+  LKey: string;
   LRttiType: TRttiType;
 begin
   Result := nil;
   if not Assigned(FRttiCacheLock) then
     Exit;
-  
+
   LKey := AClassName + '.' + AMethodName;
   FRttiCacheLock.Enter;
   try
@@ -628,11 +636,11 @@ begin
   end;
 end;
 
-procedure TInjector4D._ClearRttiCache;
+procedure TInject._ClearRttiCache;
 begin
   if not Assigned(FRttiCacheLock) then
     Exit;
-  
+
   FRttiCacheLock.Enter;
   try
     if Assigned(FTypeCache) then
@@ -644,26 +652,26 @@ begin
   end;
 end;
 
-procedure TInjector4D._Log(const AMessage: String);
+procedure TInject._Log(const AMessage: string);
 begin
   if FLoggingEnabled and Assigned(FLogCallback) then
     FLogCallback(Format('[Injector4D] %s - %s', [FormatDateTime('hh:nn:ss.zzz', Now), AMessage]));
 end;
 
-procedure TInjector4D._LogOperation(const AOperation, AServiceName: String);
+procedure TInject._LogOperation(const AOperation, AServiceName: string);
 begin
   if FLoggingEnabled then
     _Log(Format('%s: %s', [AOperation, AServiceName]));
 end;
 
-procedure TInjector4D.EnableLogging(const ALogCallback: TProc<String>);
+procedure TInject.EnableLogging(const ALogCallback: TProc<string>);
 begin
   FLoggingEnabled := True;
   FLogCallback := ALogCallback;
   _Log('Logging enabled');
 end;
 
-procedure TInjector4D.DisableLogging;
+procedure TInject.DisableLogging;
 begin
   if FLoggingEnabled then
     _Log('Logging disabled');
@@ -671,7 +679,7 @@ begin
   FLogCallback := nil;
 end;
 
-procedure TInjector4D.ClearCache;
+procedure TInject.ClearCache;
 begin
   _Log('Clearing RTTI cache');
   _ClearRttiCache;
@@ -680,7 +688,7 @@ end;
 initialization
   GInjectorLock := TCriticalSection.Create;
   New(GPInjector);
-  GPInjector^ := TInjector4D.Create;
+  GPInjector^ := TInject.Create;
 
 finalization
   if Assigned(GInjectorLock) then

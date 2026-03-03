@@ -1,40 +1,48 @@
 {
-                          Apache License
-                      Version 2.0, January 2004
-                   http://www.apache.org/licenses/
+  ------------------------------------------------------------------------------
+  InjectContainer
+  Lightweight and modular Dependency Injection container for Delphi.
+  Copyright (c) 2023-2026 Isaque Pinheiro
 
-       Licensed under the Apache License, Version 2.0 (the "License");
-       you may not use this file except in compliance with the License.
-       You may obtain a copy of the License at
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
 
-             http://www.apache.org/licenses/LICENSE-2.0
+      http://www.apache.org/licenses/LICENSE-2.0
 
-       Unless required by applicable law or agreed to in writing, software
-       distributed under the License is distributed on an "AS IS" BASIS,
-       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-       See the License for the specific language governing permissions and
-       limitations under the License.
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  ------------------------------------------------------------------------------
 }
 
 {
-  @abstract(Injector4D - Dependency Injection for Delphi)
-  @description(Evolution4D brings modern, fluent, and expressive syntax to Delphi, making code cleaner and development more productive.)
-  @created(03 Abr 2023)
-  @author(Isaque Pinheiro <isaquepsp@gmail.com>)
-  @discord(https://discord.gg/T2zJC8zX)
+  @abstract(InjectContainer - Modular Dependency Injection for Delphi)
+
+  @description(
+    InjectContainer provides a lightweight, extensible, and modular
+    dependency injection container for Delphi applications.
+    It supports constructor injection, service registration,
+    lifetime management, and clean architecture patterns.
+  )
+
+  @author(Isaque Pinheiro)
+  @created(2023-04-03)
 }
 
-unit Injector.Factory;
+unit Factory;
 
 interface
 
 uses
-  System.Rtti,
-  System.SysUtils,
-  Injector4D.Service;
+  Rtti,
+  SysUtils,
+  Service;
 
 type
-  TInjectorFactory = class
+  TInjectFactory = class
   private
     function _FactoryInternal(const Args: TArray<TValue>): TServiceData;
   public
@@ -48,7 +56,7 @@ implementation
 
 { TInjectorFactory }
 
-function TInjectorFactory.Factory<T>(): TServiceData;
+function TInjectFactory.Factory<T>(): TServiceData;
 var
   LArgs: TArray<TValue>;
 begin
@@ -59,7 +67,7 @@ begin
   Result := _FactoryInternal(LArgs);
 end;
 
-function TInjectorFactory.FactoryInterface<I>(const AClass: TClass;
+function TInjectFactory.FactoryInterface<I>(const AClass: TClass;
   const AGuid: TGUID): TServiceData;
 var
   LArgs: TArray<TValue>;
@@ -72,7 +80,7 @@ begin
   Result := _FactoryInternal(LArgs);
 end;
 
-function TInjectorFactory.FactorySingleton<T>(): TServiceData;
+function TInjectFactory.FactorySingleton<T>(): TServiceData;
 var
   LArgs: TArray<TValue>;
 begin
@@ -83,7 +91,7 @@ begin
   Result := _FactoryInternal(LArgs);
 end;
 
-function TInjectorFactory._FactoryInternal(const Args: TArray<TValue>): TServiceData;
+function TInjectFactory._FactoryInternal(const Args: TArray<TValue>): TServiceData;
 var
   LContext: TRttiContext;
   LTypeService: TRttiType;

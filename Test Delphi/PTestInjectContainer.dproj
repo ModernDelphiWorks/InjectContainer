@@ -3,13 +3,13 @@
         <ProjectGuid>{7891F628-74E7-4F29-B862-61F6C94A2AA2}</ProjectGuid>
         <ProjectVersion>20.3</ProjectVersion>
         <FrameworkType>None</FrameworkType>
-        <MainSource>PTestInjector.dpr</MainSource>
+        <MainSource>PTestInjectContainer.dpr</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Console</AppType>
-        <ProjectName Condition="'$(ProjectName)'==''">PTestInjector</ProjectName>
+        <ProjectName Condition="'$(ProjectName)'==''">PTestInjectContainer</ProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
         <Base>true</Base>
@@ -54,7 +54,7 @@
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
         <DCC_UnitSearchPath>$(DUnitX);$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <SanitizedProjectName>PTestInjector</SanitizedProjectName>
+        <SanitizedProjectName>PTestInjectContainer</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;DBXDb2Driver;vclactnband;vclFireDAC;tethering;FireDACADSDriver;ACBr_BPeDabpeESCPOS;JvPluginSystem;ORMBrDriversLinks;ACBr_BPe;TSCompD25;FireDACMSSQLDriver;vcltouch;JvBands;ACBr_NFe;vcldb;ACBr_NFeDanfeFR;svn;JvJans;ACBr_NFeDanfeESCPOS;ACBr_OFX;ACBr_PAFNFCe;JvDotNetCtrls;vclib;ACBr_SATExtratoFR;FireDACDBXDriver;ACBr_NFSeDanfseFR;vclx;WiRLRunTime;ACBr_SATExtratoRL;ACBr_GTIN;ACBr_Reinf;VCLRESTComponents;vclribbon250;vclie;fs25;bindengine;JvHMI;FireDACMySQLDriver;ACBr_PAF;ACBr_SATECFVirtual;DataSnapClient;ACBr_OpenDelivery;bindcompdbx;ACBr_CTeDacteRL;ACBr_TCP;DBXSybaseASEDriver;IndyIPServer;ACBr_CTe;IndySystem;SMCmpntD25;ACBr_PagFor;dsnapcon;ACBre_Social;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;fsADO25;Jcl;ORMBrManagerObjectSet;ACBr_SPEDImportar;ACBr_SPED;ACBr_MDFe;emshosting;ACBr_BoletoRL;ACBr_LFD;pgprovider250;DBXOdbcDriver;FireDACTDataDriver;FMXTee;frxADO25;frxFD25;DbxCommonDriver;ACBr_CIOT;JvManagedThreads;ACBr_NFSeDanfseRL;xmlrtl;DataSnapNativeClient;fmxobj;frx25;JvTimeFramework;rtl;DbxClientDriver;DBXSybaseASADriver;JvSystem;JvStdCtrls;fsDB25;ACBr_Convenio115;appanalytics;IndyIPClient;DBEBrConnectionFireDAC;bindcompvcl;ORMBrLibrary;TeeUI;ACBr_NFSeXDANFSeFR;JvDocking;JvPascalInterpreter;VclSmp;FireDACODBCDriver;JclVcl;DataSnapIndy10ServerTransport;ACBr_Boleto;DataSnapProviderClient;frxIBX25;FireDACMongoDBDriver;ACBr_SEF2;JvControls;JvPrintPreview;ACBr_MDFeDamdfeFR;ACBr_NFSe;DataSnapServerMidas;frxcs25;ZComponent;DBXInterBaseDriver;ACBr_NF3e;ZCore;BarMenuD25;RXLibD25;ACBr_TEFD;ACBr_SATWS;svnui;JvGlobus;frxe25;DBXMSSQLDriver;JvMM;ACBr_MDFeDamdfeRL;DatasnapConnectorsFreePascal;ACBr_EDI;ACBr_ONE;bindcompfmx;JvNet;DBXOracleDriver;fsIBX25;inetdb;JvAppFrm;ACBr_Diversos;ACBr_GNREGuiaFR;FmxTeeUI;emsedge;ACBr_LCDPR;fmx;fmxdae;frxDB25;ACBr_CTeDacteFR;frxTee25;JvWizards;ACBr_Ponto;dbexpress;IndyCore;ZParseSql;JvPageComps;dsnap;DataSnapCommon;fsTee25;TSDBD25;JvDB;ACBr_NFSeX;MARS.Utils;DataSnapConnectors;ACBR_DeSTDA;dclribbon250;ACBr_SAT;JclDeveloperTools;FireDACOracleDriver;DBXMySQLDriver;JvCmp;DBXFirebirdDriver;ACBr_Sintegra;FireDACCommonODBC;ACBr_GNRE;ACBr_ADRCST;IndyIPCommon;JvCustom;vcl;ACBr_NFeDanfeRL;JvXPCtrls;ACBr_SATExtratoESCPOS;FireDACDb2Driver;ACBr_Integrador;ZDbc;TeeDB;JvCore;ACBr_Comum;JvCrypt;FireDACPgDriver;ibmonitor;FireDACASADriver;ACBr_GNREGuiaRL;JvDlgs;JvRuntimeDesign;ibxpress;Tee;DataSnapServer;ibxbindings;vclwinx;FireDACDSDriver;ACBr_OpenSSL;TSDataD25;CustomIPTransport;vcldsnap;ACBr_PIXCD;bindcomp;ZPlain;ORMBrManagerFDMemTable;DBXInformixDriver;ACBr_Serial;frce;frxDBX25;ACBr_NFSeXDanfseRL;ACBr_BlocoX;dbxcds;ACBr_NFCeECFVirtual;adortl;ACBr_BoletoFR;ACBr_ANe;dsnapxml;dbrtl;inetdbxpress;IndyProtocols;JclContainers;ACBr_NF3eDANF3eESCPOS;ACBr_MTER;fmxase;$(DCC_UsePackage)</DCC_UsePackage>
@@ -88,13 +88,12 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="UTesteInjector.pas"/>
-        <DCCReference Include="..\Source\app.injector.pas"/>
-        <DCCReference Include="..\Source\Core\app.injector.abstract.pas"/>
-        <DCCReference Include="..\Source\Core\app.injector.container.pas"/>
-        <DCCReference Include="..\Source\Core\app.injector.events.pas"/>
-        <DCCReference Include="..\Source\Core\app.injector.factory.pas"/>
-        <DCCReference Include="..\Source\Core\app.injector.service.pas"/>
-        <DCCReference Include="..\Source\Lazarus\app.injector.lazarus.pas"/>
+        <DCCReference Include="..\Source\Container.pas"/>
+        <DCCReference Include="..\Source\Events.pas"/>
+        <DCCReference Include="..\Source\Factory.pas"/>
+        <DCCReference Include="..\Source\Inject.pas"/>
+        <DCCReference Include="..\Source\Service.Abstract.pas"/>
+        <DCCReference Include="..\Source\Service.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -113,7 +112,7 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">PTestInjector.dpr</Source>
+                    <Source Name="MainSource">PTestInjectContainer.dpr</Source>
                 </Source>
             </Delphi.Personality>
             <Deployment Version="5">
@@ -131,6 +130,12 @@
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgsqlite3.dylib" Class="DependencyModule"/>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\PTestInjectContainer.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>PTestInjectContainer.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -989,7 +994,6 @@
                 <ProjectRoot Platform="Win64x" Name="$(PROJECTNAME)"/>
             </Deployment>
             <Platforms>
-                <Platform value="Linux64">False</Platform>
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">False</Platform>
             </Platforms>
