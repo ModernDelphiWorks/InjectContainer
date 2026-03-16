@@ -27,15 +27,18 @@ type
   end;
 
   TInjectContainer = class(TInjectAbstract)
+  private
+    FName: string;
   protected
     FInjectorFactory: TInjectFactory;
-    FRepositoryReference: TDictionary<String, TClass>;
-    FRepositoryInterface: TDictionary<String, TPair<TClass, TGUID>>;
-    FInstances: TObjectDictionary<String, TServiceData>;
+    FRepositoryReference: TDictionary<string, TClass>;
+    FRepositoryInterface: TDictionary<string, TPair<TClass, TGUID>>;
+    FInstances: TObjectDictionary<string, TServiceData>;
     FInjectorEvents: TConstructorEvents;
   public
     constructor Create; virtual;
     destructor Destroy; override;
+    property Name: string read FName write FName;
   end;
 
 implementation
@@ -45,9 +48,9 @@ implementation
 constructor TInjectContainer.Create;
 begin
   FInjectorFactory := TInjectFactory.Create;
-  FRepositoryReference := TDictionary<String, TClass>.Create;
-  FRepositoryInterface := TDictionary<String, TPair<TClass, TGUID>>.Create;
-  FInstances := TObjectDictionary<String, TServiceData>.Create([doOwnsValues]);
+  FRepositoryReference := TDictionary<string, TClass>.Create;
+  FRepositoryInterface := TDictionary<string, TPair<TClass, TGUID>>.Create;
+  FInstances := TObjectDictionary<string, TServiceData>.Create([doOwnsValues]);
   FInjectorEvents := TConstructorEvents.Create([doOwnsValues]);
 end;
 
