@@ -56,8 +56,8 @@ type
     procedure _PushDependency(const AServiceName: string);
     procedure _PopDependency;
     // Métodos de cache RTTI
-    function _GetCachedType(const AClassName: string): TRttiType;
-    function _GetCachedMethod(const AClassName, AMethodName: string): TRttiMethod;
+    function _GetCachedType(const AClass: TClass): TRttiType;
+    function _GetCachedMethod(const AClass: TClass; const AMethodName: string): TRttiMethod;
     procedure _ClearRttiCache;
     // Métodos de logging
     procedure _Log(const AMessage: string);
@@ -68,7 +68,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure AddInjector(const ATag: string;
+    procedure AddInject(const ATag: string;
       const AInstance: TInject);
     procedure AddInstance<T: class>(const AInstance: TObject);
 //    procedure Singleton<T: class, constructor>(
@@ -206,7 +206,7 @@ begin
   _AddEvents<T>(T.ClassName, AOnCreate, AOnDestroy, AOnConstructorParams);
 end;
 
-procedure TInject.AddInjector(const ATag: string;
+procedure TInject.AddInject(const ATag: string;
   const AInstance: TInject);
 var
   LValue: TServiceData;
@@ -283,10 +283,9 @@ begin
       end;
     end;
   end;
-
   // Se chegou até aqui, o serviço não foi encontrado
-  _Log('Service not found: ' + LTag);
-  raise EServiceNotFound.Create(Format('Service %s not found!', [LTag]));
+//  _Log('Service not found: ' + LTag);
+//  raise EServiceNotFound.Create(Format('Service %s not found!', [LTag]));
 end;
 
 function TInject.GetInterface<I>(const ATag: string): I;
@@ -320,7 +319,6 @@ begin
       end;
     end;
   end;
-
   // Se chegou até aqui, a interface não foi encontrada
   _Log('Interface not found: ' + LGuidstring);
   raise EServiceNotFound.Create(Format('Interface %s not found!', [LGuidstring]));
@@ -466,10 +464,10 @@ var
 begin
   Result := [];
   // Usar cache RTTI para melhor performance
-  LRttiType := _GetCachedType(AClass.ClassName);
+  LRttiType := _GetCachedType(AClass);
   if not Assigned(LRttiType) then
     exit;
-  LRttiMethod := _GetCachedMethod(AClass.ClassName, 'Create');
+  LRttiMethod := _GetCachedMethod(AClass, 'Create');
   if not Assigned(LRttiMethod) then
     exit;
   LParameters := LRttiMethod.GetParameters;
@@ -565,51 +563,64 @@ begin
     FDependencyStack.Delete(FDependencyStack.Count - 1);
 end;
 
-function TInject._GetCachedType(const AClassName: string): TRttiType;
+function TInject._GetCachedType(const AClass: TClass): TRttiType;
+var
+  LClassKey: string;
 begin
   Result := nil;
-  if not Assigned(FRttiCacheLock) then
+  if not Assigned(FRttiCacheLock) or (AClass = nil) then
     Exit;
+  LClassKey := IntToHex(NativeInt(AClass), SizeOf(Pointer) * 2);
 
   FRttiCacheLock.Enter;
   try
-    if FTypeCache.ContainsKey(AClassName) then
-      Result := FTypeCache[AClassName]
+    if FTypeCache.ContainsKey(LClassKey) then
+      Result := FTypeCache[LClassKey]
     else
     begin
-      Result := FRttiContext.FindType(AClassName);
+      Result := FRttiContext.GetType(AClass);
       if Assigned(Result) then
-        FTypeCache.Add(AClassName, Result);
+        FTypeCache.Add(LClassKey, Result);
     end;
   finally
     FRttiCacheLock.Leave;
   end;
 end;
 
-function TInject._GetCachedMethod(const AClassName, AMethodName: string): TRttiMethod;
+function TInject._GetCachedMethod(const AClass: TClass; const AMethodName: string): TRttiMethod;
 var
   LKey: string;
   LRttiType: TRttiType;
 begin
   Result := nil;
-  if not Assigned(FRttiCacheLock) then
+  if not Assigned(FRttiCacheLock) or (AClass = nil) then
     Exit;
 
-  LKey := AClassName + '.' + AMethodName;
+  LKey := IntToHex(NativeInt(AClass), SizeOf(Pointer) * 2) + '.' + AMethodName;
   FRttiCacheLock.Enter;
   try
     if FMethodCache.ContainsKey(LKey) then
       Result := FMethodCache[LKey]
+  finally
+    FRttiCacheLock.Leave;
+  end;
+  if Assigned(Result) then
+    Exit;
+
+  LRttiType := _GetCachedType(AClass);
+  if not Assigned(LRttiType) then
+    Exit;
+
+  Result := LRttiType.GetMethod(AMethodName);
+  if not Assigned(Result) then
+    Exit;
+
+  FRttiCacheLock.Enter;
+  try
+    if not FMethodCache.ContainsKey(LKey) then
+      FMethodCache.Add(LKey, Result)
     else
-    begin
-      LRttiType := _GetCachedType(AClassName);
-      if Assigned(LRttiType) then
-      begin
-        Result := LRttiType.GetMethod(AMethodName);
-        if Assigned(Result) then
-          FMethodCache.Add(LKey, Result);
-      end;
-    end;
+      Result := FMethodCache[LKey];
   finally
     FRttiCacheLock.Leave;
   end;
