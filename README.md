@@ -1,429 +1,212 @@
-# Injector4D
+# Injector4D / InjectContainer for Delphi
 
-[![Delphi Supported Versions](https://img.shields.io/badge/Delphi%20Supported%20Versions-XE%2B-blue.svg)](http://docwiki.embarcadero.com/RADStudio/Tokyo/en/Main_Page)
-[![Platforms](https://img.shields.io/badge/Supported%20platforms-Win32%20and%20Win64-red.svg)]()
+[![Delphi Supported Versions](https://img.shields.io/badge/Delphi%20Supported%20Versions-XE%2B-blue.svg)]()
 [![License](https://img.shields.io/badge/Licence-LGPL--3.0-blue.svg)](https://opensource.org/licenses/LGPL-3.0)
 
-**Injector4D** is a dependency injection framework for Delphi, designed to simplify the development of robust and scalable applications.
+*   [🇬🇧 English](#-english)
+*   [🇧🇷 Português](#-português)
 
-## 🚀 Key Features
+---
 
-- **Complete Injection**: Support for Singleton, Factory, LazyLoad and Interface
-- **Thread Safety**: Native implementation for multi-threaded environments
-- **High Performance**: Optimized RTTI cache for maximum speed
-- **Circular Dependency Detection**: Automatic prevention of infinite loops
-- **Advanced Logging System**: Complete tracking of object lifecycle
-- **Full Compatibility**: Delphi XE+, FMX, VCL and Console  
+## 🇬🇧 English
+
+**Injector4D** (internally declared as **InjectContainer**) is a state-of-the-art, high-performance, and thread-safe Dependency Injection (DI) framework for Delphi. 
+
+Designed to simplify the development of robust, modular, and enterprise-grade scale applications, Injector4D decouples classes and interfaces dynamically with minimal overhead.
 
 <p align="center">
   <a href="https://www.isaquepinheiro.com.br">
-    <img src="https://www.isaquepinheiro.com.br/projetos/injectorbr-framework-for-delphi-opensource-17400.png" width="200" height="200">
+    <img src="https://www.isaquepinheiro.com.br/projetos/injectorbr-framework-for-delphi-opensource-17400.png" width="200" height="200" alt="Injector4D Logo">
   </a>
 </p>
 
-## 🏛 Compatibilidade
+### 🚀 Key Features
 
-| Versão | Suporte | Thread Safety | Performance |
-|--------|---------|---------------|-------------|
-| Delphi XE+ | ✅ | ✅ | ⚡ Otimizado |
-| FMX | ✅ | ✅ | ⚡ Otimizado |
-| VCL | ✅ | ✅ | ⚡ Otimizado |
-| Console | ✅ | ✅ | ⚡ Otimizado |
+*   **Complete Injection Support:** Register and inject dependencies as Singletons, Factories, LazyLoads, and Interface-based classes.
+*   **Thread Safety:** Native thread-safe implementation, safe for multi-threaded environments out of the box.
+*   **High Performance:** High-speed optimized RTTI Cache to minimize invocation overhead.
+*   **Circular Dependency Detection:** Automatic prevention of infinite resolution loops.
+*   **Advanced Logging:** Complete logging and tracking system of object lifecycles.
+*   **Full Compatibility:** Delphi XE+, FireMonkey (FMX), VCL, and Console applications.
+*   **Memory Pool:** Native allocation optimizations for Factory patterns.
 
-## 📦 Installation
+---
 
-### Boss (Recommended)
+### 🏛 Compatibility Matrix
+
+| Version / Platform | Support Status | Thread Safety | Performance |
+|--------------------|----------------|---------------|-------------|
+| Delphi XE+         | ✅ Supported    | ✅ Safe        | ⚡ Optimized |
+| FireMonkey (FMX)   | ✅ Supported    | ✅ Safe        | ⚡ Optimized |
+| VCL                | ✅ Supported    | ✅ Safe        | ⚡ Optimized |
+| Console            | ✅ Supported    | ✅ Safe        | ⚡ Optimized |
+
+### ⚙️ Installation
+
+To install using [`boss`]:
 ```bash
 boss install github.com/HashLoad/Injector4D
 ```
 
-### Manual
-1. Clone the repository
-2. Add the `src` path to Delphi's Library Path
-3. Compile and install the package
+---
 
-## 🎯 Basic Usage
+### 🎯 Basic Usage
 
-### Initial Setup
-
-```Delphi
+#### 1. Setup Entry Point
+```delphi
 program MyApp;
 
 uses
   app.injector;
 
 begin
-  // Automatic configuration
+  // Build and initialize the injector automatically
   InjectorBr.Build;
   
-  // Your application here
+  Application.Initialize;
   Application.Run;
 end.
 ```
 
-### Registering Dependencies
-
-```Delphi
-// Singleton
+#### 2. Registering Dependencies
+```delphi
+// Singleton (Single shared instance)
 InjectorBr.RegisterSingleton<IUserService, TUserService>;
 
-// Factory (new instance on each call)
+// Factory (New instance created on each request)
 InjectorBr.RegisterFactory<IEmailService, TEmailService>;
 
-// LazyLoad (instance created only when needed)
+// LazyLoad (Instance instantiated only when first resolved)
 InjectorBr.RegisterLazy<ILogService, TLogService>;
 ```
 
-### Resolving Dependencies
+#### 3. Resolving Dependencies
+```delphi
+// Resolve by interface
+var LUserService := InjectorBr.GetInterface<IUserService>;
 
-```Delphi
-// By interface
-var UserService := InjectorBr.GetInterface<IUserService>;
-
-// By class
-var EmailService := InjectorBr.Get<TEmailService>;
+// Resolve by class
+var LEmailService := InjectorBr.Get<TEmailService>;
 ```
 
-## 📋 Advanced Examples
+---
 
-## 🔧 Advanced Features
+### ⚡ Performance & Benchmarks
+The framework utilizes an internal RTTI cache and metadata pooling, bringing massive speed improvements compared to standard Delphi RTTI resolution:
 
-### 🎯 Injection Types
+*   **RTTI Cache:** 40% to 60% lookup speed improvement.
+*   **Optimized Lookup:** 15% to 25% faster resolution.
+*   **Memory Pool:** 20% to 30% reduction in allocation overhead.
 
-| Type | Method | Description | Thread Safe |
-|------|--------|-----------|-------------|
-| **Singleton** | `Register<TClass>` | Single shared instance | ✅ |
-| **Factory** | `RegisterFactory<TClass>` | New instance on each request | ✅ |
-| **LazyLoad** | `RegisterLazy<TClass>` | On-demand instantiation | ✅ |
-| **Interface** | `RegisterInterface<IInterface, TClass>` | Interface-based injection | ✅ |
-| **New Instance** | `Injector<TClass>.New` | Forces new instance | ✅ |
+---
 
-### 🛡️ Enterprise Features
+### ⛏️ Contributing
+Our team would love to receive contributions to this open-source project. Feel free to open issues or submit pull requests.
 
-✅ **Complete Thread Safety** - Automatic protection against race conditions  
-✅ **Circular Dependency Detection** - Prevention of infinite loops  
-✅ **Optimized RTTI Cache** - Up to 60% superior performance  
-✅ **Specific Exceptions** - Precise problem diagnosis  
-✅ **Logging System** - Advanced monitoring and debugging  
-✅ **Auto-Resolution** - Automatic dependency resolution  
-✅ **Lifecycle Management** - Complete lifecycle control  
-✅ **Memory Pool** - Allocation optimization for Factory patterns  
+### 📬 Contact
+*   **Telegram**: [HashLoad Channel](https://t.me/hashload)
+*   **Website**: [isaquepinheiro.com.br](https://www.isaquepinheiro.com.br)
 
-## ⚡ Performance and Benchmarks
-
-### 📊 Implemented Performance Improvements
-
-| Optimization | Gain | Impact |
-|------------|-------|----------|
-| **RTTI Cache** | 40-60% | High |
-| **Optimized Lookup** | 15-25% | Medium |
-| **Memory Pool** | 20-30% | Medium |
-| **Thread Safety** | 5-10% | Low |
-
-### 🚀 Real Benchmarks
-
-```pascal
-// Performance Test - 10,000 resolutions
-// Before optimizations: 2,500ms
-// After optimizations: 1,000ms (60% faster)
-
-var
-  Stopwatch: TStopwatch;
-  i: Integer;
-begin
-  Stopwatch := TStopwatch.StartNew;
-  for i := 1 to 10000 do
-    Injector4D.Get<TMyService>;
-  Stopwatch.Stop;
-  
-  WriteLn(Format('Time: %dms', [Stopwatch.ElapsedMilliseconds]));
-end;
-```
-
-## 🔒 Thread Safety
-
-### Automatic Protection
-```pascal
-// Automatic thread safety - no additional configuration
-TTask.Run(
-  procedure
-  begin
-    // Safe for use in multiple threads
-    var Service := Injector4D.Get<TMyService>;
-    Service.DoWork;
-  end);
-```
-
-### Circular Dependency Detection
-```pascal
-// Automatic detection prevents infinite loops
-try
-  Injector4D.Register<TClassA>;
-  Injector4D.Register<TClassB>; // If TClassA and TClassB reference each other
-  var Instance := Injector4D.Get<TClassA>;
-except
-  on E: ECircularDependency do
-    ShowMessage('Circular dependency detected: ' + E.Message);
-end;
-```
-
-## 📋 Practical Examples
-
-#### Using with interfaces
-```Delphi
-{ /////////////////////// Registering ///////////////////////// }
-
-unit dfe.engine.acbr;
-
-interface
-
-uses
-  SysUtils,
-  dfe.engine.interfaces;
-
-type
-  TDFeEngineACBr = class(TInterfacedObject, IDFeEngine)
-  public
-    class function New: IDFeEngine;
-    procedure Execute;
-  end;
-
-implementation
-
-{ TDFeEngineACBr }
-
-procedure TDFeEngineACBr.Execute;
-begin
-  raise Exception.Create('DFe Engine ACBr');
-end;
-
-class function TDFeEngineACBr.New: IDFeEngine;
-begin
-  Result := Self.Create;
-end;
-
-initialization
-  InjectorBr.RegisterInterface<IDFeEngine, TDFeEngineACBr>;
-
-end.
-
-{ /////////////////////// Recovering ///////////////////////// }
-
-unit global.controller;
-
-interface
-
-uses
-  DB,
-  Rtti,
-  Classes,
-  SysUtils,
-  Controls,
-  global.controller.interfaces,
-  dfe.engine.interfaces;
-
-type
-  TGlobalController = class(TInterfacedObject, IGlobalController)
-  private
-    FDFeEngine: IDFeEngine;
-  public
-    constructor Create;
-    procedure DFeExecute;
-  end;
-
-implementation
-
-uses
-  app.injector;
-
-{ TGlobalController }
-
-constructor TGlobalController.Create;
-begin
-  inherited;
-  FDFeEngine := InjectorBr.GetInterface<IDFeEngine>;
-end;
-
-procedure TGlobalController.DFeExecute;
-begin
-  FDFeEngine.Execute;
-end;
-
-end.
-```
-#### Using with classes
-
-```Delphi
-{ /////////////////////// Registering ///////////////////////// }
-
-unit dfe.engine.acbr;
-
-interface
-
-uses
-  SysUtils;
-
-type
-  TDFeEngineACBr = class
-  public
-    procedure Execute;
-  end;
-
-implementation
-
-{ TDFeEngineACBr }
-
-procedure TDFeEngineACBr.Execute;
-begin
-  raise Exception.Create('DFe Engine ACBr');
-end;
-
-initialization
-  InjectorBr.RegisterSington<TDFeEngineACBr>;
-
-end.
-
-{ /////////////////////// Recovering ///////////////////////// }
-
-unit global.controller;
-
-interface
-
-uses
-  DB,
-  Rtti,
-  Classes,
-  SysUtils,
-  Controls,
-  global.controller.interfaces,
-  dfe.engine.acbr;
-
-type
-  TGlobalController = class(TInterfacedObject, IGlobalController)
-  private
-    FDFeEngine: TDFeEngineACBr;
-  public
-    constructor Create;
-    procedure DFeExecute;
-  end;
-
-implementation
-
-uses
-  app.injector;
-
-{ TGlobalController }
-
-constructor TGlobalController.Create;
-begin
-  inherited;
-  FDFeEngine := InjectorBr.Get<TDFeEngineACBr>;
-end;
-
-procedure TGlobalController.DFeExecute;
-begin
-  FDFeEngine.Execute;
-end;
-
-end.
-```
-
-#### Using with class and lazyLoad
-
-```Delphi
-{ /////////////////////// Registering ///////////////////////// }
-
-unit dfe.engine.acbr;
-
-interface
-
-uses
-  SysUtils;
-
-type
-  TDFeEngineACBr = class
-  public
-    procedure Execute;
-  end;
-
-implementation
-
-{ TDFeEngineACBr }
-
-procedure TDFeEngineACBr.Execute;
-begin
-  raise Exception.Create('DFe Engine ACBr');
-end;
-
-initialization
-  InjectorBr.RegisterLazy<TDFeEngineACBr>;
-
-end.
-
-{ /////////////////////// Recovering ///////////////////////// }
-
-unit global.controller;
-
-interface
-
-uses
-  DB,
-  Rtti,
-  Classes,
-  SysUtils,
-  Controls,
-  global.controller.interfaces,
-  dfe.engine.acbr;
-
-type
-  TGlobalController = class(TInterfacedObject, IGlobalController)
-  private
-    FDFeEngine: TDFeEngineACBr;
-  public
-    constructor Create;
-    procedure DFeExecute;
-  end;
-
-implementation
-
-uses
-  app.injector;
-
-{ TGlobalController }
-
-constructor TGlobalController.Create;
-begin
-  inherited;
-  FDFeEngine := InjectorBr.Get<TDFeEngineACBr>;
-end;
-
-procedure TGlobalController.DFeExecute;
-begin
-  FDFeEngine.Execute;
-end;
-
-end.
-```
-
-## ✍️ License
-[![License](https://img.shields.io/badge/Licence-LGPL--3.0-blue.svg)](https://opensource.org/licenses/LGPL-3.0)
-
-## ⛏️ Contribution
-
-Our team would love to receive contributions to this open-source project. If you have any ideas or bug fixes, feel free to open an issue or submit a pull request.
-
-[![Issues](https://img.shields.io/badge/Issues-channel-orange)](https://github.com/HashLoad/ormbr/issues)
-
-To submit a pull request, follow these steps:
-
-1. Fork the project.
-2. Create a new branch. (`git checkout -b my-new-feature`)
-3. Make your changes and commit. (`git commit -am 'Adding new functionality'`)
-4. Push the branch. (`git push origin my-new-feature`)
-5. Open a pull request.
-
-## 📬 Contact
-[![Telegram](https://img.shields.io/badge/Telegram-channel-blue)](https://t.me/hashload)
-
-## 💲 Donation
+### 💲 Donation
 [![Doação](https://img.shields.io/badge/PagSeguro-contribua-green)](https://pag.ae/bglQrWD)
+
+---
+
+## 🇧🇷 Português
+
+**Injector4D** (declarado internamente como **InjectContainer**) é um framework de Injeção de Dependência (DI) de alto desempenho, robusto e totalmente thread-safe para Delphi.
+
+Desenvolvido para simplificar a criação de aplicações corporativas escaláveis e modulares, o Injector4D desacopla classes e interfaces de forma dinâmica com o mínimo de overhead possível.
+
+### 🚀 Recursos Principais
+
+*   **Suporte Completo a Injeções:** Registre e injete dependências como Singleton, Factory, LazyLoad e injeção baseada em Interfaces.
+*   **Thread Safety Nativo:** Proteção nativa automática contra condições de corrida em ambientes multi-thread.
+*   **Alta Performance:** Cache de RTTI otimizado de alta velocidade para minimizar o overhead de busca e instanciação.
+*   **Detecção de Dependência Circular:** Prevenção automática e segura de loops infinitos de resolução em tempo de execução.
+*   **Logs Avançados:** Sistema de gravação de logs para monitoramento detalhado do ciclo de vida de objetos.
+*   **Compatibilidade Total:** Compatível com Delphi XE+, FireMonkey (FMX), VCL e aplicações de Console.
+*   **Pool de Memória:** Otimização nativa de alocação de memória para padrões Factory.
+
+---
+
+### 🏛 Matriz de Compatibilidade
+
+| Versão / Plataforma | Suporte | Thread Safety | Performance |
+|---------------------|---------|---------------|-------------|
+| Delphi XE+          | ✅ Suportado | ✅ Seguro     | ⚡ Otimizado |
+| FireMonkey (FMX)    | ✅ Suportado | ✅ Seguro     | ⚡ Otimizado |
+| VCL                 | ✅ Suportado | ✅ Seguro     | ⚡ Otimizado |
+| Console             | ✅ Suportado | ✅ Seguro     | ⚡ Otimizado |
+
+### ⚙️ Instalação
+
+Para instalar usando o [`boss`]:
+```bash
+boss install github.com/HashLoad/Injector4D
+```
+
+---
+
+### 🎯 Uso Básico
+
+#### 1. Ponto de Entrada da Aplicação
+```delphi
+program MyApp;
+
+uses
+  app.injector;
+
+begin
+  // Inicializa e constrói o injetor automaticamente
+  InjectorBr.Build;
+  
+  Application.Initialize;
+  Application.Run;
+end.
+```
+
+#### 2. Registrando Dependências
+```delphi
+// Singleton (Única instância compartilhada)
+InjectorBr.RegisterSingleton<IUserService, TUserService>;
+
+// Factory (Nova instância criada a cada chamada)
+InjectorBr.RegisterFactory<IEmailService, TEmailService>;
+
+// LazyLoad (Instanciado apenas sob demanda quando for usado)
+InjectorBr.RegisterLazy<ILogService, TLogService>;
+```
+
+#### 3. Resolvendo Dependências
+```delphi
+// Resolução por Interface
+var LUserService := InjectorBr.GetInterface<IUserService>;
+
+// Resolução por Classe
+var LEmailService := InjectorBr.Get<TEmailService>;
+```
+
+---
+
+### ⚡ Performance & Benchmarks
+O framework utiliza um cache RTTI interno altamente otimizado e pooling de metadados, resultando em ganhos impressionantes de performance:
+
+*   **Cache RTTI:** Ganho de 40% a 60% na velocidade de lookup.
+*   **Busca Otimizada:** Resolução de dependências 15% a 25% mais rápida.
+*   **Pool de Memória:** Redução de 20% a 30% no overhead de alocação de objetos Factory.
+
+---
+
+### ⛏️ Contribuição
+Adoramos contribuições! Sinta-se à vontade para abrir issues ou enviar pull requests.
+
+### 📬 Contato
+*   **Telegram**: [Canal HashLoad](https://t.me/hashload)
+*   **Website**: [isaquepinheiro.com.br](https://www.isaquepinheiro.com.br)
+
+### 💲 Doação
+[![Doação](https://img.shields.io/badge/PagSeguro-contribua-green)](https://pag.ae/bglQrWD)
+
+---
+*Copyright © 2025-2026 Isaque Pinheiro. Licensed under LGPL-3.0 License.*
