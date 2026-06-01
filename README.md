@@ -1,7 +1,7 @@
 # InjectContainer for Delphi
 
 [![Delphi XE+](https://img.shields.io/badge/Delphi-XE%20or%20superior-blue.svg)]()
-[![License](https://img.shields.io/badge/License-LGPL--3.0-blue.svg)](https://opensource.org/licenses/LGPL-3.0)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 *   [🇬🇧 English](#-english)
 *   [🇧🇷 Português](#-português)
@@ -159,4 +159,4 @@ var LEmailService := InjectContainer.Get<TEmailService>;
 ```
 
 ---
-*Copyright © 2025-2026 Isaque Pinheiro. Licensed under LGPL-3.0 License.*
+*Copyright © 2025-2026 Isaque Pinheiro. Licensed under MIT License.*
