@@ -1,7 +1,7 @@
-# Injector4D / InjectContainer for Delphi
+# InjectContainer for Delphi
 
-[![Delphi Supported Versions](https://img.shields.io/badge/Delphi%20Supported%20Versions-XE%2B-blue.svg)]()
-[![License](https://img.shields.io/badge/Licence-LGPL--3.0-blue.svg)](https://opensource.org/licenses/LGPL-3.0)
+[![Delphi XE+](https://img.shields.io/badge/Delphi-XE%20or%20superior-blue.svg)]()
+[![License](https://img.shields.io/badge/License-LGPL--3.0-blue.svg)](https://opensource.org/licenses/LGPL-3.0)
 
 *   [🇬🇧 English](#-english)
 *   [🇧🇷 Português](#-português)
@@ -10,58 +10,48 @@
 
 ## 🇬🇧 English
 
-**Injector4D** (internally declared as **InjectContainer**) is a state-of-the-art, high-performance, and thread-safe Dependency Injection (DI) framework for Delphi. 
-
-Designed to simplify the development of robust, modular, and enterprise-grade scale applications, Injector4D decouples classes and interfaces dynamically with minimal overhead.
-
-<p align="center">
-  <a href="https://www.isaquepinheiro.com.br">
-    <img src="https://www.isaquepinheiro.com.br/projetos/injectorbr-framework-for-delphi-opensource-17400.png" width="200" height="200" alt="Injector4D Logo">
-  </a>
-</p>
+**InjectContainer** is a state-of-the-art, high-performance, and thread-safe Dependency Injection (DI) framework for Delphi. Designed to simplify the development of robust, modular, and enterprise-grade applications, InjectContainer decouples classes and interfaces dynamically with minimal runtime overhead. By leveraging a high-speed optimized RTTI cache, object instantiation pooling, and automatic circular dependency detection, it provides developers with a seamless, clean, and modern codebase architecture.
 
 ### 🚀 Key Features
 
-*   **Complete Injection Support:** Register and inject dependencies as Singletons, Factories, LazyLoads, and Interface-based classes.
-*   **Thread Safety:** Native thread-safe implementation, safe for multi-threaded environments out of the box.
-*   **High Performance:** High-speed optimized RTTI Cache to minimize invocation overhead.
-*   **Circular Dependency Detection:** Automatic prevention of infinite resolution loops.
-*   **Advanced Logging:** Complete logging and tracking system of object lifecycles.
-*   **Full Compatibility:** Delphi XE+, FireMonkey (FMX), VCL, and Console applications.
-*   **Memory Pool:** Native allocation optimizations for Factory patterns.
-
----
+*   **Diverse Lifecycle Management:** Register and resolve dependencies as Singletons, Factories, LazyLoads, and Interface-based classes.
+*   **100% Thread-Safe:** Built from the ground up to be safe for highly concurrent, multi-threaded server environments out of the box.
+*   **High-Speed RTTI Cache:** Custom metadata cache pooling yields up to 40% to 60% faster resolution compared to standard Delphi RTTI.
+*   **Circular Dependency Detection:** Automatic prevention mechanism that detects and reports infinite instantiation loops during resolution.
+*   **Comprehensive Lifecycle Logging:** Built-in hooks to trace, monitor, and audit object lifecycles (creation, resolution, and destruction).
+*   **Memory Pool Optimizations:** Native allocation optimization reduces heap overhead by 20% to 30% for high-frequency factory instantiations.
 
 ### 🏛 Compatibility Matrix
 
-| Version / Platform | Support Status | Thread Safety | Performance |
-|--------------------|----------------|---------------|-------------|
-| Delphi XE+         | ✅ Supported    | ✅ Safe        | ⚡ Optimized |
-| FireMonkey (FMX)   | ✅ Supported    | ✅ Safe        | ⚡ Optimized |
-| VCL                | ✅ Supported    | ✅ Safe        | ⚡ Optimized |
-| Console            | ✅ Supported    | ✅ Safe        | ⚡ Optimized |
+| Environment / IDE | Platform / Compiler | Thread Safety | Circular Detection |
+| :--- | :--- | :---: | :---: |
+| **Delphi XE or superior** | VCL, FMX, Console (Win/Linux/macOS/iOS/Android) | ✅ Yes | ✅ Yes |
 
 ### ⚙️ Installation
 
-To install using [`boss`]:
-```bash
-boss install github.com/HashLoad/Injector4D
+To install using the package manager [**Boss**](https://github.com/HashLoad/boss):
+
+```sh
+boss install "https://github.com/ModernDelphiWorks/InjectContainer"
 ```
+
+> [!NOTE]
+> Since this package does not have a static registry on Boss, it must be installed using its direct Git repository HTTPS URL.
 
 ---
 
-### 🎯 Basic Usage
+### ⚡️ Quick Start
 
 #### 1. Setup Entry Point
 ```delphi
 program MyApp;
 
 uses
-  app.injector;
+  InjectContainer.Core;
 
 begin
-  // Build and initialize the injector automatically
-  InjectorBr.Build;
+  // Initialize and build the global dependency container
+  InjectContainer.Build;
   
   Application.Initialize;
   Application.Run;
@@ -70,96 +60,74 @@ end.
 
 #### 2. Registering Dependencies
 ```delphi
-// Singleton (Single shared instance)
-InjectorBr.RegisterSingleton<IUserService, TUserService>;
+uses
+  InjectContainer.Core;
 
-// Factory (New instance created on each request)
-InjectorBr.RegisterFactory<IEmailService, TEmailService>;
+// Register a Singleton (a single shared instance)
+InjectContainer.RegisterSingleton<IUserService, TUserService>;
 
-// LazyLoad (Instance instantiated only when first resolved)
-InjectorBr.RegisterLazy<ILogService, TLogService>;
+// Register a Factory (creates a new instance upon each request)
+InjectContainer.RegisterFactory<IEmailService, TEmailService>;
+
+// Register a LazyLoad (instantiated only when first requested)
+InjectContainer.RegisterLazy<ILogService, TLogService>;
 ```
 
 #### 3. Resolving Dependencies
 ```delphi
-// Resolve by interface
-var LUserService := InjectorBr.GetInterface<IUserService>;
+// Resolve via interface
+var LUserService := InjectContainer.GetInterface<IUserService>;
 
-// Resolve by class
-var LEmailService := InjectorBr.Get<TEmailService>;
+// Resolve via concrete class
+var LEmailService := InjectContainer.Get<TEmailService>;
 ```
-
----
-
-### ⚡ Performance & Benchmarks
-The framework utilizes an internal RTTI cache and metadata pooling, bringing massive speed improvements compared to standard Delphi RTTI resolution:
-
-*   **RTTI Cache:** 40% to 60% lookup speed improvement.
-*   **Optimized Lookup:** 15% to 25% faster resolution.
-*   **Memory Pool:** 20% to 30% reduction in allocation overhead.
-
----
-
-### ⛏️ Contributing
-Our team would love to receive contributions to this open-source project. Feel free to open issues or submit pull requests.
-
-### 📬 Contact
-*   **Telegram**: [HashLoad Channel](https://t.me/hashload)
-*   **Website**: [isaquepinheiro.com.br](https://www.isaquepinheiro.com.br)
-
-### 💲 Donation
-[![Doação](https://img.shields.io/badge/PagSeguro-contribua-green)](https://pag.ae/bglQrWD)
 
 ---
 
 ## 🇧🇷 Português
 
-**Injector4D** (declarado internamente como **InjectContainer**) é um framework de Injeção de Dependência (DI) de alto desempenho, robusto e totalmente thread-safe para Delphi.
-
-Desenvolvido para simplificar a criação de aplicações corporativas escaláveis e modulares, o Injector4D desacopla classes e interfaces de forma dinâmica com o mínimo de overhead possível.
+**InjectContainer** é um framework moderno, de alta performance e thread-safe para Injeção de Dependências (DI) em Delphi. Projetado para simplificar a criação de aplicações corporativas robustas e modulares, o InjectContainer desacopla classes e interfaces de forma dinâmica com o menor overhead possível. Ao combinar cache RTTI otimizado de alta velocidade, pooling de instanciação de objetos e detecção automática de dependência circular, ele fornece aos desenvolvedores uma arquitetura limpa, legível e de padrão state-of-the-art.
 
 ### 🚀 Recursos Principais
 
-*   **Suporte Completo a Injeções:** Registre e injete dependências como Singleton, Factory, LazyLoad e injeção baseada em Interfaces.
-*   **Thread Safety Nativo:** Proteção nativa automática contra condições de corrida em ambientes multi-thread.
-*   **Alta Performance:** Cache de RTTI otimizado de alta velocidade para minimizar o overhead de busca e instanciação.
-*   **Detecção de Dependência Circular:** Prevenção automática e segura de loops infinitos de resolução em tempo de execução.
-*   **Logs Avançados:** Sistema de gravação de logs para monitoramento detalhado do ciclo de vida de objetos.
-*   **Compatibilidade Total:** Compatível com Delphi XE+, FireMonkey (FMX), VCL e aplicações de Console.
-*   **Pool de Memória:** Otimização nativa de alocação de memória para padrões Factory.
-
----
+*   **Múltiplos Ciclos de Vida:** Registre e resolva dependências como Singleton, Factory, LazyLoad ou mapeamento simples baseado em interfaces.
+*   **Totalmente Thread-Safe:** Implementado nativamente para ser seguro para o uso concorrente em ambientes multi-thread de alta carga de forma imediata.
+*   **Cache RTTI de Alta Velocidade:** O cache RTTI personalizado reduz o tempo de busca e carregamento de metadados entre 40% e 60% comparado à RTTI padrão.
+*   **Detecção de Dependência Circular:** Mecanismo automático para prevenir loops infinitos e gerar relatórios claros de dependência cíclica durante a resolução.
+*   **Log de Ciclo de Vida:** Sistema de monitoramento integrado para registrar a criação, resolução e destruição de recursos.
+*   **Otimização de Alocação de Memória:** O pool de memória otimizado reduz a alocação em heap entre 20% e 30% em instanciamentos de Factory muito recorrentes.
 
 ### 🏛 Matriz de Compatibilidade
 
-| Versão / Plataforma | Suporte | Thread Safety | Performance |
-|---------------------|---------|---------------|-------------|
-| Delphi XE+          | ✅ Suportado | ✅ Seguro     | ⚡ Otimizado |
-| FireMonkey (FMX)    | ✅ Suportado | ✅ Seguro     | ⚡ Otimizado |
-| VCL                 | ✅ Suportado | ✅ Seguro     | ⚡ Otimizado |
-| Console             | ✅ Suportado | ✅ Seguro     | ⚡ Otimizado |
+| Ambiente / IDE | Plataforma / Compilador | Thread Safety | Detecção Circular |
+| :--- | :--- | :---: | :---: |
+| **Delphi XE ou superior** | VCL, FMX, Console (Win/Linux/macOS/iOS/Android) | ✅ Sim | ✅ Sim |
 
 ### ⚙️ Instalação
 
-Para instalar usando o [`boss`]:
-```bash
-boss install github.com/HashLoad/Injector4D
+Para instalar usando o gerenciador de pacotes [**Boss**](https://github.com/HashLoad/boss):
+
+```sh
+boss install "https://github.com/ModernDelphiWorks/InjectContainer"
 ```
+
+> [!NOTE]
+> Como esta biblioteca não está pré-registrada com apelido no indexador global do Boss, ela é instalada informando-se o link HTTPS direto de seu repositório Git.
 
 ---
 
-### 🎯 Uso Básico
+### ⚡️ Início Rápido
 
-#### 1. Ponto de Entrada da Aplicação
+#### 1. Configurando o Entry Point (Bootstrapping)
 ```delphi
 program MyApp;
 
 uses
-  app.injector;
+  InjectContainer.Core;
 
 begin
-  // Inicializa e constrói o injetor automaticamente
-  InjectorBr.Build;
+  // Inicializa e constrói o container de injeção global
+  InjectContainer.Build;
   
   Application.Initialize;
   Application.Run;
@@ -168,45 +136,27 @@ end.
 
 #### 2. Registrando Dependências
 ```delphi
-// Singleton (Única instância compartilhada)
-InjectorBr.RegisterSingleton<IUserService, TUserService>;
+uses
+  InjectContainer.Core;
 
-// Factory (Nova instância criada a cada chamada)
-InjectorBr.RegisterFactory<IEmailService, TEmailService>;
+// Registra um Singleton (única instância compartilhada por toda a aplicação)
+InjectContainer.RegisterSingleton<IUserService, TUserService>;
 
-// LazyLoad (Instanciado apenas sob demanda quando for usado)
-InjectorBr.RegisterLazy<ILogService, TLogService>;
+// Registra uma Factory (uma nova instância criada a cada chamada de resolução)
+InjectContainer.RegisterFactory<IEmailService, TEmailService>;
+
+// Registra um LazyLoad (instanciado tardiamente apenas quando solicitado)
+InjectContainer.RegisterLazy<ILogService, TLogService>;
 ```
 
 #### 3. Resolvendo Dependências
 ```delphi
-// Resolução por Interface
-var LUserService := InjectorBr.GetInterface<IUserService>;
+// Resolve através de interface
+var LUserService := InjectContainer.GetInterface<IUserService>;
 
-// Resolução por Classe
-var LEmailService := InjectorBr.Get<TEmailService>;
+// Resolve através da classe concreta
+var LEmailService := InjectContainer.Get<TEmailService>;
 ```
-
----
-
-### ⚡ Performance & Benchmarks
-O framework utiliza um cache RTTI interno altamente otimizado e pooling de metadados, resultando em ganhos impressionantes de performance:
-
-*   **Cache RTTI:** Ganho de 40% a 60% na velocidade de lookup.
-*   **Busca Otimizada:** Resolução de dependências 15% a 25% mais rápida.
-*   **Pool de Memória:** Redução de 20% a 30% no overhead de alocação de objetos Factory.
-
----
-
-### ⛏️ Contribuição
-Adoramos contribuições! Sinta-se à vontade para abrir issues ou enviar pull requests.
-
-### 📬 Contato
-*   **Telegram**: [Canal HashLoad](https://t.me/hashload)
-*   **Website**: [isaquepinheiro.com.br](https://www.isaquepinheiro.com.br)
-
-### 💲 Doação
-[![Doação](https://img.shields.io/badge/PagSeguro-contribua-green)](https://pag.ae/bglQrWD)
 
 ---
 *Copyright © 2025-2026 Isaque Pinheiro. Licensed under LGPL-3.0 License.*
