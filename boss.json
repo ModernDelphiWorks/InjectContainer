@@ -1,0 +1,9 @@
+{
+  "name": "InjectContainer",
+  "description": "High-performance, thread-safe Dependency Injection (DI) framework for Delphi",
+  "version": "1.0.0",
+  "homepage": "https://github.com/ModernDelphiWorks/InjectContainer",
+  "mainsrc": "./Source",
+  "projects": [],
+  "dependencies": {}
+}
