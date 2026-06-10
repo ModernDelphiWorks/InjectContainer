@@ -74,3 +74,6 @@ modules/
 # Boss package manager files
 !boss.json
 !boss-lock.json
+
+# PubDelphi manifest (tracked, like boss.json)
+!pubdelphi.json
