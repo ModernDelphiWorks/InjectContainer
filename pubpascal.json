@@ -1,7 +1,7 @@
 {
   "$schema": "https://www.pubdelphi.dev/schema/pubdelphi.schema.json",
   "name": "InjectContainer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "kind": "runtime",
   "sources": ["./Source/"],
   "platforms": ["Win32", "Win64"],
