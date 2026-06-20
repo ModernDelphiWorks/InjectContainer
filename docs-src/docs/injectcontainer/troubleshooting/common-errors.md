@@ -99,4 +99,4 @@ GetInjector.SingletonLazy<TMyClass>(
 
 **Cause:** The `_Log` method in `Inject.pas` uses a hardcoded prefix `'[Injector4D]'`. This is the internal code name; the public framework name is **InjectContainer**.
 
-**Fix:** This is cosmetic only and does not affect functionality. <!-- TODO: confirm if the prefix will be updated in a future release -->
+**Fix:** This is cosmetic only and does not affect functionality. The prefix `[Injector4D]` is hardcoded in `TInject._Log` (`Inject.pas`) and has not been changed to `[InjectContainer]` in the current source.

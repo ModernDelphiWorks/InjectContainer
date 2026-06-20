@@ -38,7 +38,7 @@ No thread can observe a partially initialized or freed global injector. `GInject
 :::warning Current threading model
 The dependency stack is **not thread-local**. If two threads simultaneously resolve services that share a dependency path, the stack-based circular dependency check may produce false positives or missed detections under concurrent resolution.
 
-For single-threaded resolution at startup (the typical pattern), this is not an issue. For fully concurrent resolution of new lazy services from multiple threads simultaneously, guard the resolution call externally or register all services at startup before spawning worker threads. <!-- TODO: confirm if TInject plans a per-thread stack in future versions -->
+For single-threaded resolution at startup (the typical pattern), this is not an issue. For fully concurrent resolution of new lazy services from multiple threads simultaneously, guard the resolution call externally or register all services at startup before spawning worker threads. The current implementation uses a single shared `TList<string>` field (`FDependencyStack`) with no thread-local variant; there is no per-thread stack in the present source.
 :::
 
 ## Recommended threading pattern
