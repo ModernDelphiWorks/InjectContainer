@@ -1,4 +1,4 @@
-# InjectContainer for Delphi
+# InjectContainer — Thread-safe Dependency Injection container for Delphi
 
 [![Delphi XE+](https://img.shields.io/badge/Delphi-XE%20or%20superior-blue.svg)]()
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -6,7 +6,7 @@
 
 > 🔒 **Supply-chain transparency (CRA-ready):** a machine-readable **SBOM** (CycloneDX) is published on the package portal — [pubpascal.dev/packages/injectcontainer](https://www.pubpascal.dev/packages/injectcontainer) · security disclosure policy in **[SECURITY.md](SECURITY.md)**.
 
-📚 **[Documentation](https://moderndelphiworks.github.io/InjectContainer/)**
+📚 **[Documentation](https://moderndelphiworks.github.io/InjectContainer/)** · ⬇️ **[Download](../../releases)** · 🐛 **[Issues](../../issues)**
 
 *   [🇬🇧 English](#-english)
 *   [🇧🇷 Português](#-português)
@@ -19,12 +19,12 @@
 
 ### 🚀 Key Features
 
-*   **Diverse Lifecycle Management:** Register and resolve dependencies as Singletons, Factories, LazyLoads, and Interface-based classes.
+*   **Diverse Lifecycle Management:** Register and resolve dependencies as Singletons, Factories, LazyLoads, and interface-based classes.
 *   **100% Thread-Safe:** Built from the ground up to be safe for highly concurrent, multi-threaded server environments out of the box.
-*   **High-Speed RTTI Cache:** Custom metadata cache pooling yields up to 40% to 60% faster resolution compared to standard Delphi RTTI.
+*   **High-Speed RTTI Cache:** Custom metadata cache pooling yields up to 40%–60% faster resolution compared to standard Delphi RTTI.
 *   **Circular Dependency Detection:** Automatic prevention mechanism that detects and reports infinite instantiation loops during resolution.
 *   **Comprehensive Lifecycle Logging:** Built-in hooks to trace, monitor, and audit object lifecycles (creation, resolution, and destruction).
-*   **Memory Pool Optimizations:** Native allocation optimization reduces heap overhead by 20% to 30% for high-frequency factory instantiations.
+*   **Memory Pool Optimizations:** Native allocation optimization reduces heap overhead by 20%–30% for high-frequency factory instantiations.
 
 ### 🏛 Compatibility Matrix
 
@@ -49,11 +49,14 @@ boss install "https://github.com/ModernDelphiWorks/InjectContainer"
 > [!NOTE]
 > Since this package does not have a static registry on Boss, it must be installed using its direct Git repository HTTPS URL.
 
+Alternatively, register it on [**pubpascal.dev**](https://www.pubpascal.dev/packages/injectcontainer) and install via the pubpascal CLI.
+
 ---
 
 ### ⚡️ Quick Start
 
 #### 1. Setup Entry Point
+
 ```delphi
 program MyApp;
 
@@ -63,13 +66,14 @@ uses
 begin
   // Initialize and build the global dependency container
   InjectContainer.Build;
-  
+
   Application.Initialize;
   Application.Run;
 end.
 ```
 
 #### 2. Registering Dependencies
+
 ```delphi
 uses
   InjectContainer.Core;
@@ -85,6 +89,7 @@ InjectContainer.RegisterLazy<ILogService, TLogService>;
 ```
 
 #### 3. Resolving Dependencies
+
 ```delphi
 // Resolve via interface
 var LUserService := InjectContainer.GetInterface<IUserService>;
@@ -131,11 +136,14 @@ boss install "https://github.com/ModernDelphiWorks/InjectContainer"
 > [!NOTE]
 > Como esta biblioteca não está pré-registrada com apelido no indexador global do Boss, ela é instalada informando-se o link HTTPS direto de seu repositório Git.
 
+Alternativamente, registre-a em [**pubpascal.dev**](https://www.pubpascal.dev/packages/injectcontainer) e instale via CLI do pubpascal.
+
 ---
 
 ### ⚡️ Início Rápido
 
 #### 1. Configurando o Entry Point (Bootstrapping)
+
 ```delphi
 program MyApp;
 
@@ -145,13 +153,14 @@ uses
 begin
   // Inicializa e constrói o container de injeção global
   InjectContainer.Build;
-  
+
   Application.Initialize;
   Application.Run;
 end.
 ```
 
 #### 2. Registrando Dependências
+
 ```delphi
 uses
   InjectContainer.Core;
@@ -167,6 +176,7 @@ InjectContainer.RegisterLazy<ILogService, TLogService>;
 ```
 
 #### 3. Resolvendo Dependências
+
 ```delphi
 // Resolve através de interface
 var LUserService := InjectContainer.GetInterface<IUserService>;
@@ -176,4 +186,45 @@ var LEmailService := InjectContainer.Get<TEmailService>;
 ```
 
 ---
-*Copyright © 2025-2026 Isaque Pinheiro. Licensed under MIT License.*
+
+## ⛏️ Contributing / Contribuição
+
+Contributions are welcome — bug reports, feature requests, and pull requests all help make InjectContainer better.
+
+Contribuições são bem-vindas — relatos de bugs, sugestões de funcionalidades e pull requests ajudam a melhorar o InjectContainer.
+
+[![Issues](https://img.shields.io/badge/Issues-channel-orange)](../../issues)
+
+**Steps / Passos:**
+
+1. Fork the repository / Faça um fork do repositório.
+2. Create a feature branch / Crie uma branch de funcionalidade: `git checkout -b feature/my-feature`.
+3. Commit your changes with a clear message / Faça commit com uma mensagem clara: `git commit -m "feat: add my feature"`.
+4. Push to your fork / Envie para o seu fork: `git push origin feature/my-feature`.
+5. Open a Pull Request describing what changed and why / Abra um Pull Request descrevendo o que mudou e por quê.
+
+---
+
+## 📬 Contact / Contato
+
+[![Email](https://img.shields.io/badge/Email-isaquesp%40gmail.com-D14836?logo=gmail&logoColor=white)](mailto:isaquesp@gmail.com)
+
+---
+
+## 💲 Donation / Doação
+
+If InjectContainer saves you time, consider supporting its development.
+
+Se o InjectContainer economiza seu tempo, considere apoiar o seu desenvolvimento.
+
+[![Doação](https://img.shields.io/badge/PagSeguro-contribua-green)](https://pag.ae/bglQrWD)
+
+---
+
+## 📄 License / Licença
+
+This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
+
+Este projeto é licenciado sob a **Licença MIT** — veja [LICENSE](LICENSE) para detalhes.
+
+*Copyright © 2025-2026 Isaque Pinheiro.*
