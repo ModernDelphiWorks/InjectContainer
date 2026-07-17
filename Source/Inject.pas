@@ -18,6 +18,7 @@ interface
 uses
   Rtti,
   TypInfo,
+  Classes,
   SysUtils,
   SyncObjs,
   Generics.Collections,
@@ -36,7 +37,16 @@ type
   PInject = ^TInject;
   TInject = class(TInjectContainer)
   strict private
-    FDependencyStack: TList<string>;
+    // Pilha de resolução de dependências, PARTICIONADA POR THREAD.
+    // Uma cadeia de resolução é, por natureza, por-thread; uma pilha única
+    // compartilhada entre as threads do Horse mistura cadeias distintas e
+    // gera falso "Circular dependency detected" + corrupção da TList sob
+    // Add/Delete concorrentes (achado do PR backend#307). Cada thread tem a
+    // sua própria pilha; o dicionário é protegido por um lock CURTO só no
+    // get/create/remove — a pilha em si é tocada apenas pela thread dona,
+    // sem lock, preservando o ganho de concorrência do pool do #307.
+    FDependencyStacks: TObjectDictionary<TThreadID, TList<string>>;
+    FDependencyStacksLock: TCriticalSection;
     // Cache RTTI para melhorar performance
     FRttiContext: TRttiContext;
     FTypeCache: TDictionary<string, TRttiType>;
@@ -52,7 +62,9 @@ type
     function _ResolverInterfaceType(const AHandle: PTypeInfo;
       const AGUID: TGUID): TValue;
     function _ResolverParams(const AClass: TClass): TConstructorParams; overload;
-    procedure _CheckCircularDependency(const AServiceName: string);
+    function _CurrentDependencyStack(const ACreate: Boolean): TList<string>;
+    procedure _CheckCircularDependency(const AStack: TList<string>;
+      const AServiceName: string);
     procedure _PushDependency(const AServiceName: string);
     procedure _PopDependency;
     // Métodos de cache RTTI
@@ -116,7 +128,8 @@ implementation
 constructor TInject.Create;
 begin
   inherited Create;
-  FDependencyStack := TList<string>.Create;
+  FDependencyStacks := TObjectDictionary<TThreadID, TList<string>>.Create([doOwnsValues]);
+  FDependencyStacksLock := TCriticalSection.Create;
   // Inicializar cache RTTI
   FRttiContext := TRttiContext.Create;
   FTypeCache := TDictionary<string, TRttiType>.Create;
@@ -129,8 +142,10 @@ end;
 
 destructor TInject.Destroy;
 begin
-  if Assigned(FDependencyStack) then
-    FDependencyStack.Free;
+  if Assigned(FDependencyStacksLock) then
+    FDependencyStacksLock.Free;
+  if Assigned(FDependencyStacks) then
+    FDependencyStacks.Free;  // doOwnsValues libera pilhas residuais
   // Liberar cache RTTI
   if Assigned(FRttiCacheLock) then
     FRttiCacheLock.Free;
@@ -516,25 +531,52 @@ begin
   end;
 end;
 
-procedure TInject._CheckCircularDependency(const AServiceName: string);
+function TInject._CurrentDependencyStack(const ACreate: Boolean): TList<string>;
+var
+  LThreadID: TThreadID;
+begin
+  Result := nil;
+  if not Assigned(FDependencyStacks) then
+    Exit;
+  LThreadID := TThread.CurrentThread.ThreadID;
+  // Lock CURTO: protege apenas a estrutura do dicionário (get/create). A
+  // pilha devolvida pertence à cadeia de resolução da thread corrente e é
+  // manipulada só por ela, portanto pode ser usada fora do lock com segurança.
+  FDependencyStacksLock.Enter;
+  try
+    if not FDependencyStacks.TryGetValue(LThreadID, Result) then
+    begin
+      if ACreate then
+      begin
+        Result := TList<string>.Create;
+        FDependencyStacks.Add(LThreadID, Result);
+      end;
+    end;
+  finally
+    FDependencyStacksLock.Leave;
+  end;
+end;
+
+procedure TInject._CheckCircularDependency(const AStack: TList<string>;
+  const AServiceName: string);
 var
   LFor: Integer;
   LDep: Integer;
   LDependencyChain: string;
 begin
-  if not Assigned(FDependencyStack) then
+  if not Assigned(AStack) then
     Exit;
 
   // Check if the service already exists in the dependency stack
-  for LFor := 0 to FDependencyStack.Count - 1 do
+  for LFor := 0 to AStack.Count - 1 do
   begin
-    if FDependencyStack[LFor] = AServiceName then
+    if AStack[LFor] = AServiceName then
     begin
       // Build the dependency chain for the error message, only up to the detected cycle
       LDependencyChain := '';
       for LDep := 0 to LFor do
       begin
-        LDependencyChain := LDependencyChain + FDependencyStack[LDep];
+        LDependencyChain := LDependencyChain + AStack[LDep];
         if LDep < LFor then
           LDependencyChain := LDependencyChain + ' -> ';
       end;
@@ -549,18 +591,39 @@ begin
 end;
 
 procedure TInject._PushDependency(const AServiceName: string);
+var
+  LStack: TList<string>;
 begin
-  if not Assigned(FDependencyStack) then
-    FDependencyStack := TList<string>.Create;
-
-  _CheckCircularDependency(AServiceName);
-  FDependencyStack.Add(AServiceName);
+  LStack := _CurrentDependencyStack(True);
+  if not Assigned(LStack) then
+    Exit;
+  _CheckCircularDependency(LStack, AServiceName);
+  LStack.Add(AServiceName);
 end;
 
 procedure TInject._PopDependency;
+var
+  LStack: TList<string>;
+  LThreadID: TThreadID;
 begin
-  if Assigned(FDependencyStack) and (FDependencyStack.Count > 0) then
-    FDependencyStack.Delete(FDependencyStack.Count - 1);
+  LStack := _CurrentDependencyStack(False);
+  if not Assigned(LStack) then
+    Exit;
+  if LStack.Count > 0 then
+    LStack.Delete(LStack.Count - 1);
+  // Ao fim da cadeia (pilha vazia) a pilha da thread é liberada, de modo que
+  // uma thread de pool ociosa nunca retenha uma lista vazia: zero leak e o
+  // dicionário fica limitado às threads em resolução no momento.
+  if LStack.Count = 0 then
+  begin
+    LThreadID := TThread.CurrentThread.ThreadID;
+    FDependencyStacksLock.Enter;
+    try
+      FDependencyStacks.Remove(LThreadID);  // doOwnsValues libera LStack
+    finally
+      FDependencyStacksLock.Leave;
+    end;
+  end;
 end;
 
 function TInject._GetCachedType(const AClass: TClass): TRttiType;

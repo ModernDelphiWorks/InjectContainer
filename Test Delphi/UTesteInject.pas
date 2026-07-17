@@ -81,12 +81,85 @@ type
     procedure TestInjectorInterfaceGetMessage;
     [Test]
     procedure TestInjectorAutoInjectParams;
+    [Test]
+    procedure TestConcurrentResolveIsThreadSafe;
   end;
 
 implementation
 
 uses
+  Classes,
+  SyncObjs,
+  Generics.Collections,
   Inject;
+
+type
+  // Serviços simples usados só pelo teste de concorrência.
+  TCLeafA = class end;
+  TCLeafB = class end;
+  TCLeafC = class end;
+  TCLeafD = class end;
+  TCLeafE = class end;
+
+  TResolveWorker = class(TThread)
+  private
+    FInjector: TInject;
+    FGate: TEvent;
+    FGets: Integer;
+    FFailures: PInteger;
+    FFirstError: PString;
+    FErrLock: TCriticalSection;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(AInjector: TInject; AGate: TEvent; AGets: Integer;
+      AFailures: PInteger; AFirstError: PString; AErrLock: TCriticalSection);
+  end;
+
+constructor TResolveWorker.Create(AInjector: TInject; AGate: TEvent;
+  AGets: Integer; AFailures: PInteger; AFirstError: PString;
+  AErrLock: TCriticalSection);
+begin
+  FInjector := AInjector;
+  FGate := AGate;
+  FGets := AGets;
+  FFailures := AFailures;
+  FFirstError := AFirstError;
+  FErrLock := AErrLock;
+  inherited Create(False);
+end;
+
+procedure TResolveWorker.Execute;
+var
+  I: Integer;
+begin
+  FGate.WaitFor(INFINITE);
+  for I := 0 to FGets - 1 do
+  begin
+    try
+      case I mod 5 of
+        0: FInjector.Get<TCLeafA>;
+        1: FInjector.Get<TCLeafB>;
+        2: FInjector.Get<TCLeafC>;
+        3: FInjector.Get<TCLeafD>;
+      else
+        FInjector.Get<TCLeafE>;
+      end;
+    except
+      on E: Exception do
+      begin
+        TInterlocked.Increment(FFailures^);
+        FErrLock.Enter;
+        try
+          if FFirstError^ = '' then
+            FFirstError^ := E.ClassName + ': ' + E.Message;
+        finally
+          FErrLock.Leave;
+        end;
+      end;
+    end;
+  end;
+end;
 
 procedure TTestInjector.Setup;
 begin
@@ -247,6 +320,71 @@ begin
     Assert.IsNotNull(LMyClassParam.ParamInterface, 'ParamInterface is nil');
   finally
     LInjector.Free;
+  end;
+end;
+
+procedure TTestInjector.TestConcurrentResolveIsThreadSafe;
+const
+  THREADS = 8;
+  ROUNDS  = 10;
+  GETS    = 20000;
+var
+  LInjector: TInject;
+  LGate: TEvent;
+  LErrLock: TCriticalSection;
+  LWorkers: array[0..THREADS - 1] of TResolveWorker;
+  LFailures: Integer;
+  LFirstError: string;
+  I: Integer;
+  R: Integer;
+begin
+  // Regressão da correção de thread-safety da pilha de resolução (PR#307):
+  // resolves concorrentes NÃO podem gerar falso "Circular dependency detected"
+  // nem corromper a TList da pilha (range error / AV).
+  LFailures := 0;
+  LFirstError := '';
+  LInjector := TInject.Create;
+  LErrLock := TCriticalSection.Create;
+  try
+    LInjector.Singleton<TCLeafA>;
+    LInjector.Singleton<TCLeafB>;
+    LInjector.Singleton<TCLeafC>;
+    LInjector.Singleton<TCLeafD>;
+    LInjector.Singleton<TCLeafE>;
+    // Pré-instancia no thread principal: durante a fase concorrente FInstances
+    // é só lido e a pilha de dependências é o único estado mutável sob teste.
+    LInjector.Get<TCLeafA>;
+    LInjector.Get<TCLeafB>;
+    LInjector.Get<TCLeafC>;
+    LInjector.Get<TCLeafD>;
+    LInjector.Get<TCLeafE>;
+
+    for R := 1 to ROUNDS do
+    begin
+      LGate := TEvent.Create(nil, True, False, '');
+      try
+        for I := 0 to THREADS - 1 do
+          LWorkers[I] := TResolveWorker.Create(LInjector, LGate, GETS,
+            @LFailures, @LFirstError, LErrLock);
+        LGate.SetEvent;
+        for I := 0 to THREADS - 1 do
+        begin
+          LWorkers[I].WaitFor;
+          LWorkers[I].Free;
+        end;
+      finally
+        LGate.Free;
+      end;
+      if LFailures > 0 then
+        Break;
+    end;
+
+    Assert.AreEqual(0, LFailures,
+      Format('Concurrent resolve produced %d failure(s). First: %s',
+        [LFailures, LFirstError]));
+  finally
+    LInjector.Free;
+    LErrLock.Free;
   end;
 end;
 
